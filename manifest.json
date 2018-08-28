@@ -27,7 +27,8 @@
         "32": "icons/riseicon_32.png",
         "40": "icons/riseicon_40.png",
         "48": "icons/riseicon_48.png",
-        "128": "icons/riseicon_128.png"
+        "128": "icons/riseicon_128.png",
+        "176": "icons/riseicon_176.png"
     },
     "options_page": "options.html",
     "-ms-preload": {
