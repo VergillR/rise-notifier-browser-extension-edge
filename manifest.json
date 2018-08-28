@@ -22,7 +22,10 @@
     },
     "icons": {
         "16": "icons/riseicon_16.png",
+        "20": "icons/riseicon_20.png",
+        "30": "icons/riseicon_30.png",
         "32": "icons/riseicon_32.png",
+        "40": "icons/riseicon_40.png",
         "48": "icons/riseicon_48.png",
         "128": "icons/riseicon_128.png"
     },
