@@ -1,0 +1,195 @@
+{
+  "extName": {
+    "message": "RISE Notifications",
+    "description": "Recevoir des notifications sur des RISE transactions."
+  },
+  "extDesc": {
+    "message": "Recevoir des notifications sur des RISE transactions."
+  },
+  "locale": {
+    "message": "fr"
+  },
+  "momentformat": {
+    "message": "D MMMM YYYY, HH:mm:ss"
+  },
+  "button_save": {
+    "message": "Enregistrer et recommencer"
+  },
+  "button_cancel": {
+    "message": "Annuler"
+  },
+  "connection_error": {
+    "message": "Erreur de connexion"
+  },
+  "startup": {
+    "message": "Au début"
+  },
+  "checkstartup": {
+    "message": "Vérifier les blocs manqués"
+  },
+  "show_pricechange": {
+    "message": "Montrer le changement de prix (RISE/USD)"
+  },
+  "check_blockexplorer": {
+    "message": "Examiner le Bloc Explorer"
+  },
+  "validation_error": {
+    "message": "L'addresse commence par 15 à 30 chiffres et se termine par R"
+  },
+  "more_addresses": {
+    "message": "Plus d'adresses"
+  },
+  "opt_title_addresses": {
+    "message": "Options - Adresses"
+  },
+  "opt_title_transactions": {
+    "message": "Options - Transactions"
+  },
+  "opt_title_options": {
+    "message": "Options"
+  },
+  "opt_riseaddresses": {
+    "message": "RISE Adresses"
+  },
+  "opt_riseaddress": {
+    "message": "Adresse"
+  },
+  "opt_address_placeholder": {
+    "message": "Entrez la RISE adresse ici..."
+  },
+  "opt_url_placeholder": {
+    "message": "Entrez l'URL ici..."
+  },
+  "data": {
+    "message": "des données"
+  },
+  "prices": {
+    "message": "des prix"
+  },
+  "watch_question": {
+    "message": "Quelles transactions doivent être suivies?"
+  },
+  "watch_all": {
+    "message": "Toutes transactions"
+  },
+  "watch_incoming": {
+    "message": "Uniquement les transactions entrantes"
+  },
+  "watch_outgoing": {
+    "message": "Uniquement les transactions sortantes"
+  },
+  "source": {
+    "message": "Source"
+  },
+  "sources": {
+    "message": "Sources"
+  },
+  "button_showdetails": {
+    "message": "Afficher les détails"
+  },
+  "button_hidedetails": {
+    "message": "Cacher les détails"
+  },
+  "received": {
+    "message": "Reçu"
+  },
+  "sent": {
+    "message": "Envoyé"
+  },
+  "m_lastmessages": {
+    "message": "Derniers messages"
+  },
+  "m_rowId": {
+    "message": "Numéro de ligne"
+  },
+  "m_signSignature": {
+    "message": "Deuxième signature"
+  },
+  "m_requesterPublicKey": {
+    "message": "Demandeur clé publique"
+  },
+  "m_senderPublicKey": {
+    "message": "Envoyeur clé publique"
+  },
+  "m_signature": {
+    "message": "Signature"
+  },
+  "m_amount": {
+    "message": "Montant"
+  },
+  "m_asset": {
+    "message": "Propriété"
+  },
+  "m_blockid": {
+    "message": "Numéro de bloc"
+  },
+  "m_fee": {
+    "message": "Coûts de transaction"
+  },
+  "m_blockheight": {
+    "message": "Hauteur de bloc"
+  },
+  "m_transactionid": {
+    "message": "Numéro de transaction"
+  },
+  "m_recipient": {
+    "message": "Destinataire"
+  },
+  "m_sender": {
+    "message": "Envoyeur"
+  },
+  "m_signatures": {
+    "message": "Signatures"
+  },
+  "m_time": {
+    "message": "Date et l'heure"
+  },
+  "m_type": {
+    "message": "Catégorie"
+  },
+  "m_code": {
+    "message": "Code"
+  },
+  "t_secondsig": {
+    "message": "Faire la deuxième signature"
+  },
+  "t_delegate": {
+    "message": "Inscrire le délégué"
+  },
+  "t_vote": {
+    "message": "Voter"
+  },
+  "t_multisig": {
+    "message": "Signature multiple"
+  },
+  "t_dapp": {
+    "message": "Dapp transaction"
+  },
+  "t_transfer_in": {
+    "message": "Transfert - entrant"
+  },
+  "t_transfer_out": {
+    "message": "Transfert - sortant"
+  },
+  "n_transaction": {
+    "message": "transaction"
+  },
+  "n_transactions": {
+    "message": "transactions"
+  },
+  "n_therewas": {
+    "message": "Il y avait"
+  },
+  "n_therewere": {
+    "message": "Il y avait"
+  },
+  "p_viewlastmessages": {
+    "message": "Regarder les derniers messages"
+  },
+  "p_address": {
+    "message": "adresse"
+  },
+  "p_addresses": {
+    "message": "adresses"
+  }
+}

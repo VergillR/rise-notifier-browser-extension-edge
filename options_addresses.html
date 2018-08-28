@@ -1,0 +1,39 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./styles/semantic.min.css">
+  <link rel="stylesheet" href="./styles/custom.css">
+  <script src="./scripts/TweenMax.min.js"></script>
+</head>
+<body>
+<div class="ui segments">
+  <div class="ui top segment right aligned"><span class="titletext" id="i_title"></span></div>
+  <div class="ui segment inverted blue left aligned"><h4 id="i_addresses"></h4></div>
+  <div class="ui segment">
+    <label id="i_address1"></label><a id="address1url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input">
+    <input id="address1" name="address1" type="text" pattern="^\d{15,30}R$/i" class="userinput">
+    </div><div id="address1note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment">
+    <label id="i_address2"></label><a id="address2url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address2" name="address2" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address2note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment">
+    <label id="i_address3"></label><a id="address3url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address3" name="address3" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address3note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment clickable specialeffect">
+    <a><span id="moreaddresses" class="titletext"></span></a>
+  </div>
+  <div class="ui segment bottom attached">
+    <div class="ui small buttons">
+      <button class="ui green button" id="saveaddresses"></button>
+      <button class="ui right attached orange button" id="canceladdresses"></button>
+    </div>
+  </div>
+</div>
+<script src="./scripts/functions.js"></script>
+<script src="./scripts/options_addresses.js"></script>
+</body>
+</html>

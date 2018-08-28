@@ -1,0 +1,195 @@
+{
+  "extName": {
+    "message": "RISE Notifications",
+    "description": "Get notifications for RISE transactions."
+  },
+  "extDesc": {
+    "message": "Get notifications for RISE transactions."
+  },
+  "locale": {
+    "message": "en"
+  },
+  "momentformat": {
+    "message": "MMMM Do YYYY, HH:mm:ss"
+  },
+  "button_save": {
+    "message": "Save and Restart"
+  },
+  "button_cancel": {
+    "message": "Cancel"
+  },
+  "connection_error": {
+    "message": "Connection error"
+  },
+  "startup": {
+    "message": "On initialization"
+  },
+  "checkstartup": {
+    "message": "Check missed blocks"
+  },
+  "show_pricechange": {
+    "message": "Show price change (RISE/USD)"
+  },
+  "check_blockexplorer": {
+    "message": "Check on Block Explorer"
+  },
+  "validation_error": {
+    "message": "Address starts with 15 to 30 digits and ends with R"
+  },
+  "more_addresses": {
+    "message": "More addresses"
+  },
+  "opt_title_addresses": {
+    "message": "Options - Addresses"
+  },
+  "opt_title_transactions": {
+    "message": "Options - Transactions"
+  },
+  "opt_title_options": {
+    "message": "Options"
+  },
+  "opt_riseaddresses": {
+    "message": "RISE Addresses"
+  },
+  "opt_riseaddress": {
+    "message": "Address"
+  },
+  "opt_address_placeholder": {
+    "message": "Enter RISE address here..."
+  },
+  "opt_url_placeholder": {
+    "message": "Enter URL here..."
+  },
+  "data": {
+    "message": "data"
+  },
+  "prices": {
+    "message": "prices"
+  },
+  "watch_question": {
+    "message": "Which transactions should be followed?"
+  },
+  "watch_all": {
+    "message": "All transactions"
+  },
+  "watch_incoming": {
+    "message": "Only incoming transactions"
+  },
+  "watch_outgoing": {
+    "message": "Only outgoing transactions"
+  },
+  "source": {
+    "message": "Source"
+  },
+  "sources": {
+    "message": "Sources"
+  },
+  "button_showdetails": {
+    "message": "Show details"
+  },
+  "button_hidedetails": {
+    "message": "Hide details"
+  },
+  "received": {
+    "message": "Received"
+  },
+  "sent": {
+    "message": "Sent"
+  },
+  "m_lastmessages": {
+    "message": "Last Messages"
+  },
+  "m_rowId": {
+    "message": "Row id"
+  },
+  "m_signSignature": {
+    "message": "Sign Signature"
+  },
+  "m_requesterPublicKey": {
+    "message": "Requester Public Key"
+  },
+  "m_senderPublicKey": {
+    "message": "Sender Public Key"
+  },
+  "m_signature": {
+    "message": "Signature"
+  },
+  "m_amount": {
+    "message": "Amount"
+  },
+  "m_asset": {
+    "message": "Asset"
+  },
+  "m_blockid": {
+    "message": "Block id"
+  },
+  "m_fee": {
+    "message": "Fee"
+  },
+  "m_blockheight": {
+    "message": "Block height"
+  },
+  "m_transactionid": {
+    "message": "Transaction id"
+  },
+  "m_recipient": {
+    "message": "Recipient"
+  },
+  "m_sender": {
+    "message": "Sender"
+  },
+  "m_signatures": {
+    "message": "Signatures"
+  },
+  "m_time": {
+    "message": "Date and time"
+  },
+  "m_type": {
+    "message": "Type"
+  },
+  "m_code": {
+    "message": "Code"
+  },
+  "t_secondsig": {
+    "message": "Second signature creation"
+  },
+  "t_delegate": {
+    "message": "Delegate registration"
+  },
+  "t_vote": {
+    "message": "Vote"
+  },
+  "t_multisig": {
+    "message": "Multi-signature"
+  },
+  "t_dapp": {
+    "message": "Dapp transaction"
+  },
+  "t_transfer_in": {
+    "message": "Transfer Incoming"
+  },
+  "t_transfer_out": {
+    "message": "Transfer Outgoing"
+  },
+  "n_transaction": {
+    "message": "transaction"
+  },
+  "n_transactions": {
+    "message": "transactions"
+  },
+  "n_therewas": {
+    "message": "There was"
+  },
+  "n_therewere": {
+    "message": "There were"
+  },
+  "p_viewlastmessages": {
+    "message": "View last messages"
+  },
+  "p_address": {
+    "message": "address"
+  },
+  "p_addresses": {
+    "message": "addresses"
+  }
+}

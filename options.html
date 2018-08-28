@@ -1,0 +1,122 @@
+<html>
+<head>
+  <link rel="stylesheet" href="./styles/semantic.min.css">
+  <link rel="stylesheet" href="./styles/custom.css">
+</head>
+<body>
+<h1><img src="./icons/riseicon_32.png" alt="riselogo" /><span id="i_title"></span></h1>
+<div class="ui segments">
+  <div class="ui top segment inverted blue left aligned"><h4 id="i_addresses"></h4></div>
+  <div class="ui segment">
+    <label id="i_address1"></label><a id="address1url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input">
+    <input id="address1" name="address1" type="text" pattern="^\d{15,30}R$/i" class="userinput">
+    </div><div id="address1note" class="ui red warning message" hidden></div>
+  </div> 
+  <div class="ui segment">
+    <label id="i_address2"></label><a id="address2url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address2" name="address2" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address2note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment">
+    <label id="i_address3"></label><a id="address3url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address3" name="address3" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address3note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment">
+    <label id="i_address4"></label><a id="address4url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address4" name="address4" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address4note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment">
+    <label id="i_address5"></label><a id="address5url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
+    <div class="ui fluid input"><input id="address5" name="address5" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address5note" class="ui red warning message" hidden></div>
+  </div>
+  <div class="ui segment bottom attached">
+    <div class="ui small buttons">
+      <button class="ui green button" id="saveaddresses"></button>
+      <button class="ui right attached orange button canceloptions"></button>
+    </div>
+  </div>
+</div>
+
+<div class="ui segments">
+  <div class="ui top segment inverted blue">
+    <h4 id="transactionsquestion"></h4>
+  </div>
+  <div class="ui attached segment">
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="1" id="watchAll">
+      <label id="i_all"></label>
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="2" id="watchIncoming">
+      <label id="i_incoming"></label>
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="3" id="watchOutgoing">
+      <label id="i_outgoing"></label>
+    </div><br />
+  </div>
+  <div class="ui segment bottom attached">
+    <div class="ui small buttons">
+      <button class="ui left attached green button" id="savemessages"></button>
+      <button class="ui right attached orange button canceloptions"></button>
+    </div>
+  </div>
+</div>
+
+<div class="ui segments">
+  <div class="ui top segment inverted blue">
+    <h4 id="sources"></h4>
+  </div>
+  <div class="ui basic attached segment">
+    <label id="atstartup"></label>
+    <div class="ui list">
+      <div class="item">
+        <div class="ui checkbox">
+          <input id="checkstartup" name="checkstartup" type="checkbox">
+          <label id="labelcheckstartup"></label>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ui checkbox">
+          <input id="checkpricediff" name="checkpricediff" type="checkbox">
+          <label id="labelcheckpricediff"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui attached segment">
+    <div class="ui radio checkbox">
+      <input name="datasource" type="radio" value="1" id="datasource1">
+      <label id="datasourcelabel1"></label><input type="url" readonly id="source1" size="60" />
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="datasource" type="radio" value="2" id="datasource2">
+      <label id="datasourcelabel2"></label><input type="url" readonly id="source2" size="60" />
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="datasource" type="radio" value="3" id="datasource3">
+      <label id="datasourcelabel3"></label><input type="url" class="urlinput" id="source3" size="60" />
+    </div><br />
+  </div>
+  <div class="ui attached segment">
+    <div class="ui radio checkbox">
+      <input name="pricesource" type="radio" value="1" id="pricesource1">
+      <label id="pricesourcelabel1"></label><input type="url" readonly id="price1" size="60" />
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="pricesource" type="radio" value="2" id="pricesource2">
+      <label id="pricesourcelabel2"></label><input type="url" class="urlinput" id="price2" size="60" />
+    </div><br />
+  </div>
+  <div class="ui segment bottom attached end">
+    <div class="ui small buttons">
+      <button class="ui left attached green button" id="savesources"></button>
+      <button class="ui right attached orange button canceloptions"></button>
+    </div>
+  </div>
+</div>
+
+<script src="./scripts/functions.js"></script>
+<script src="./scripts/options.js"></script>
+</body>
+</html>

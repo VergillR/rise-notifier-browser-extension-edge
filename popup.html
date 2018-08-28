@@ -1,0 +1,30 @@
+<html>
+<head>
+  <link rel="stylesheet" href="./styles/semantic.min.css">
+  <link rel="stylesheet" href="./styles/custom.css">
+  <script src="./scripts/TweenMax.min.js"></script>
+</head>
+<body id="main">
+  <div class="ui main segments" id="mainmenu">
+    <div class="ui top segment right aligned" id="stage"><div class="movement"><img src="./icons/riseicon_48.png"></div><span class="titletext" id="i_title"></span><div id="versionnumber"></div></div>
+    <div class="ui blue center aligned segment">
+      <div>
+        <div><i class="yellow icon dollar"></i>RISE / USD  <span class="titletext" id="riseusd"></span></div>
+        <div><i class="orange icon bitcoin"></i>RISE / BTC  <span class="titletext" id="risebtc"></span></div>
+      </div>
+    </div>
+    <div class="ui teal center aligned segment specialeffect clickable" id="gotoaddresses">
+      <a href="./options_addresses.html" target="_self"><i class="blue icon tags"></i> <span class="titletext" id="numberofvalidaddresses"></span></a>
+    </div>
+    <div class="ui center aligned segment specialeffect clickable" id="gotowatchmessages">
+      <a href="./options_watchmessages.html" target="_self"><i class="teal icon eye"></i> <span class="titletext" id="watchingmessages"></span></a>
+    </div>
+    <div class="ui center aligned segment specialeffect clickable" id="bottombutton">
+      <a><i class="green icon envelope"></i> <span class="titletext" id="view"></span></a>
+    </div>
+  </div>
+  
+  <script src="./scripts/functions.js"></script>
+  <script src="./scripts/popup.js"></script>
+</body>
+</html>

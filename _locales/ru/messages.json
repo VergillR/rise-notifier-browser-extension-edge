@@ -1,0 +1,195 @@
+{
+  "extName": {
+    "message": "RISE сообщения",
+    "description": "получать сообщения для RISE транзакций."
+  },
+  "extDesc": {
+    "message": "получать сообщения для RISE транзакций."
+  },
+  "locale": {
+    "message": "ru"
+  },
+  "momentformat": {
+    "message": "D MMMM YYYY, HH:mm:ss"
+  },
+  "button_save": {
+    "message": "сохранить и перезапустить"
+  },
+  "button_cancel": {
+    "message": "отменить"
+  },
+  "connection_error": {
+    "message": "Ошибка подключения"
+  },
+  "startup": {
+    "message": "в начале"
+  },
+  "checkstartup": {
+    "message": "проверить пропущенные блоки"
+  },
+  "show_pricechange": {
+    "message": "показать изменение цены (RISE/USD)"
+  },
+  "check_blockexplorer": {
+    "message": "смотреть RISE проводник"
+  },
+  "validation_error": {
+    "message": "Адрес начинается от 15 до 30 цифр и заканчивается буквой R"
+  },
+  "more_addresses": {
+    "message": "больше адресов"
+  },
+  "opt_title_addresses": {
+    "message": "настройка - адреса"
+  },
+  "opt_title_transactions": {
+    "message": "настройка - транзакции"
+  },
+  "opt_title_options": {
+    "message": "настройка"
+  },
+  "opt_riseaddresses": {
+    "message": "RISE адреса"
+  },
+  "opt_riseaddress": {
+    "message": "адрес"
+  },
+  "opt_address_placeholder": {
+    "message": "введите RISE адрес здесь..."
+  },
+  "opt_url_placeholder": {
+    "message": "введите URL здесь..."
+  },
+  "data": {
+    "message": "данные"
+  },
+  "prices": {
+    "message": "Цены"
+  },
+  "watch_question": {
+    "message": "какие транзакции следует соблюдать?"
+  },
+  "watch_all": {
+    "message": "Все транзакции"
+  },
+  "watch_incoming": {
+    "message": "только входящие транзакции"
+  },
+  "watch_outgoing": {
+    "message": "только исходящие транзакции"
+  },
+  "source": {
+    "message": "источник"
+  },
+  "sources": {
+    "message": "источники"
+  },
+  "button_showdetails": {
+    "message": "показать детали"
+  },
+  "button_hidedetails": {
+    "message": "скрыть детали"
+  },
+  "received": {
+    "message": "получено"
+  },
+  "sent": {
+    "message": "послал"
+  },
+  "m_lastmessages": {
+    "message": "последние сообщения"
+  },
+  "m_rowId": {
+    "message": "номер строки"
+  },
+  "m_signSignature": {
+    "message": "вторая подпись"
+  },
+  "m_requesterPublicKey": {
+    "message": "запрашивающая открытый ключ"
+  },
+  "m_senderPublicKey": {
+    "message": "отправитель открытый ключ"
+  },
+  "m_signature": {
+    "message": "подпись"
+  },
+  "m_amount": {
+    "message": "количество"
+  },
+  "m_asset": {
+    "message": "имущество"
+  },
+  "m_blockid": {
+    "message": "номер блока"
+  },
+  "m_fee": {
+    "message": "трансфертные расходы"
+  },
+  "m_blockheight": {
+    "message": "высота блока"
+  },
+  "m_transactionid": {
+    "message": "номер транзакции"
+  },
+  "m_recipient": {
+    "message": "получатель"
+  },
+  "m_sender": {
+    "message": "отправитель"
+  },
+  "m_signatures": {
+    "message": "подписи"
+  },
+  "m_time": {
+    "message": "Дата и время"
+  },
+  "m_type": {
+    "message": "тип"
+  },
+  "m_code": {
+    "message": "код"
+  },
+  "t_secondsig": {
+    "message": "создание второй подписи"
+  },
+  "t_delegate": {
+    "message": "регистрационный делегат"
+  },
+  "t_vote": {
+    "message": "голосовать"
+  },
+  "t_multisig": {
+    "message": "многократная подпись"
+  },
+  "t_dapp": {
+    "message": "DAPP трансакция"
+  },
+  "t_transfer_in": {
+    "message": "входящий перевод"
+  },
+  "t_transfer_out": {
+    "message": "исходящий перевод"
+  },
+  "n_transaction": {
+    "message": "трансакция"
+  },
+  "n_transactions": {
+    "message": "транзакции"
+  },
+  "n_therewas": {
+    "message": "было"
+  },
+  "n_therewere": {
+    "message": "были"
+  },
+  "p_viewlastmessages": {
+    "message": "смотреть последние сообщения"
+  },
+  "p_address": {
+    "message": "адрес"
+  },
+  "p_addresses": {
+    "message": "адреса"
+  }
+}

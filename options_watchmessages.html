@@ -1,0 +1,36 @@
+<html>
+<head>
+  <title>Options - Messages</title>
+  <link rel="stylesheet" href="./styles/semantic.min.css">
+  <link rel="stylesheet" href="./styles/custom.css">
+  <script src="./scripts/TweenMax.min.js"></script>
+</head>
+<body>
+<div class="ui segments">
+  <div class="ui top segment right aligned"><span class="titletext" id="i_title"></span></div>
+  <div class="ui top segment inverted blue"><h4 id="transactionsquestion"></h4></div>
+  <div class="ui attached segment">
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="1" id="watchAll">
+      <label id="i_all"></label>
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="2" id="watchIncoming">
+      <label id="i_incoming"></label>
+    </div><br />
+    <div class="ui radio checkbox">
+      <input name="watch" type="radio" value="3" id="watchOutgoing">
+      <label id="i_outgoing"></label>
+    </div><br />
+  </div>
+  <div class="ui segment bottom attached">
+    <div class="ui small buttons">
+      <button class="ui left attached green button" id="savemessages"></button>
+      <button class="ui right attached orange button" id="cancelmessages"></button>
+    </div>
+  </div>
+</div>
+<script src="./scripts/functions.js"></script>
+<script src="./scripts/options_watchmessages.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+{
+  "extName": {
+    "message": "RISE Notificaties",
+    "description": "Ontvang notificaties voor RISE transacties."
+  },
+  "extDesc": {
+    "message": "Ontvang notificaties voor RISE transacties."
+  },
+  "locale": {
+    "message": "nl"
+  },
+  "momentformat": {
+    "message": "D MMMM YYYY, HH:mm:ss"
+  },
+  "button_save": {
+    "message": "Bewaar en Start Opnieuw"
+  },
+  "button_cancel": {
+    "message": "Annuleer"
+  },
+  "connection_error": {
+    "message": "Fout bij het verbinden"
+  },
+  "startup": {
+    "message": "Bij het opstarten"
+  },
+  "checkstartup": {
+    "message": "Controleer gemiste blokken"
+  },
+  "show_pricechange": {
+    "message": "Toon koersverschil (RISE/USD)"
+  },
+  "check_blockexplorer": {
+    "message": "Bekijk de Block Explorer"
+  },
+  "validation_error": {
+    "message": "Het adres begint met 15 tot 30 getallen en eindigt met R"
+  },
+  "more_addresses": {
+    "message": "Meer adressen"
+  },
+  "opt_title_addresses": {
+    "message": "Opties - Adressen"
+  },
+  "opt_title_transactions": {
+    "message": "Opties - Transacties"
+  },
+  "opt_title_options": {
+    "message": "Opties"
+  },
+  "opt_riseaddresses": {
+    "message": "RISE Adressen"
+  },
+  "opt_riseaddress": {
+    "message": "Adres"
+  },
+  "opt_address_placeholder": {
+    "message": "Vul hier het RISE adres in..."
+  },
+  "opt_url_placeholder": {
+    "message": "Vul hier de URL in..."
+  },
+  "data": {
+    "message": "data"
+  },
+  "prices": {
+    "message": "koersen"
+  },
+  "watch_question": {
+    "message": "Welke transacties moeten gevolgd worden?"
+  },
+  "watch_all": {
+    "message": "Alle transacties"
+  },
+  "watch_incoming": {
+    "message": "Alleen inkomende transacties"
+  },
+  "watch_outgoing": {
+    "message": "Alleen uitgaande transacties"
+  },
+  "source": {
+    "message": "Bron"
+  },
+  "sources": {
+    "message": "Bronnen"
+  },
+  "button_showdetails": {
+    "message": "Toon details"
+  },
+  "button_hidedetails": {
+    "message": "Verberg details"
+  },
+  "received": {
+    "message": "Ontvangen"
+  },
+  "sent": {
+    "message": "Verzonden"
+  },
+  "m_lastmessages": {
+    "message": "Laatste meldingen"
+  },
+  "m_rowId": {
+    "message": "Rijnummer"
+  },
+  "m_signSignature": {
+    "message": "Tweede signatuur"
+  },
+  "m_requesterPublicKey": {
+    "message": "Aanvrager publieke sleutel"
+  },
+  "m_senderPublicKey": {
+    "message": "Zender publieke sleutel"
+  },
+  "m_signature": {
+    "message": "Signatuur"
+  },
+  "m_amount": {
+    "message": "Aantal"
+  },
+  "m_asset": {
+    "message": "Eigendom"
+  },
+  "m_blockid": {
+    "message": "Bloknummer"
+  },
+  "m_fee": {
+    "message": "Transactiekosten"
+  },
+  "m_blockheight": {
+    "message": "Blokhoogte"
+  },
+  "m_transactionid": {
+    "message": "Transactienummer"
+  },
+  "m_recipient": {
+    "message": "Ontvanger"
+  },
+  "m_sender": {
+    "message": "Verzender"
+  },
+  "m_signatures": {
+    "message": "Signaturen"
+  },
+  "m_time": {
+    "message": "Datum en tijd"
+  },
+  "m_type": {
+    "message": "Type"
+  },
+  "m_code": {
+    "message": "Code"
+  },
+  "t_secondsig": {
+    "message": "Aanmaken tweede signatuur"
+  },
+  "t_delegate": {
+    "message": "Delegaat registreren"
+  },
+  "t_vote": {
+    "message": "Stemmen"
+  },
+  "t_multisig": {
+    "message": "Meerhandtekeningen"
+  },
+  "t_dapp": {
+    "message": "Dapp transactie"
+  },
+  "t_transfer_in": {
+    "message": "Transfer - inkomend"
+  },
+  "t_transfer_out": {
+    "message": "Transfer - uitgaand"
+  },
+  "n_transaction": {
+    "message": "transactie"
+  },
+  "n_transactions": {
+    "message": "transacties"
+  },
+  "n_therewas": {
+    "message": "Er was"
+  },
+  "n_therewere": {
+    "message": "Er waren"
+  },
+  "p_viewlastmessages": {
+    "message": "Bekijk laatste meldingen"
+  },
+  "p_address": {
+    "message": "adres"
+  },
+  "p_addresses": {
+    "message": "adressen"
+  }
+}
