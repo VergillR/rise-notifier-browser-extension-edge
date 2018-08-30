@@ -174,8 +174,7 @@ function start () {
                 txt = getElement(labels[item], `${description} (${labels['code']} ${temp[item]})`)
                 info = base
               } else {
-                const label = getText(`m_${item}`) !== '' ? getText(`m_${item}`) : capitalize(item)
-                txt = getElement(label, temp[item])
+                txt = getElement(capitalize(item), temp[item])
                 info = detail
               }
               node.appendChild(txt)
