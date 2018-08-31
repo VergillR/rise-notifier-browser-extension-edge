@@ -1,13 +1,13 @@
 /* global chrome, TweenMax */
 const version = 'v.1.0.0'
-const sourceUrl = 'https://www.novaprisma.pro/rise'
+const sourceUrl = 'https://www.novaprisma.pro/rise/'
 const sourceUrl2 = 'https://rise-latest-transactions.herokuapp.com/json/'
 const sourcePriceUrl = 'https://api.coinmarketcap.com/v1/ticker/RISE/'
 const explorerUrl = 'https://explorer.rise.vision/address/'
 // for checking missed blocks: use sourceOfflineMessages appended with the type matching the messages that are watched ('/fetchall', '/fetchin' or '/fetchout') and then '?' + the starting blockheight (e.g. '?blockheight=1225674') and '&' + for each valid, non-empty address (up to 5; e.g. '&address1=15200025131276213840R&address2=14414875305937957714R')
 // e.g. 'https://rise-latest-transactions.herokuapp.com/fetchall/?blockheight=1225674&address1=15200025131276213840R&address2=14414875305937957714R'
-const sourceOfflineMessages = 'https://www.novaprisma.pro/'
-const sourceOfflineMessages2 = 'https://rise-latest-transactions.herokuapp.com/'
+const sourceOfflineMessages = sourceUrl.slice(0, -5)
+const sourceOfflineMessages2 = sourceUrl2.slice(0, -5)
 
 const getText = (name) => chrome.i18n.getMessage(name)
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1)

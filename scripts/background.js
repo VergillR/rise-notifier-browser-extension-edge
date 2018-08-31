@@ -81,7 +81,7 @@ function loadScript (scriptName, callback) {
 document.body.onload = loadScript('functions', () => {
   chrome.storage.local.get([ 'useSource', 'useSourcePrice', 'source3', 'sourcePrice2', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
     source = (item.useSource && item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
-    sourceOffline = (item.useSource && item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceOfflineMessages2 : sourceOfflineMessages)
+    sourceOffline = (item.useSource && item.useSource.toString() === '3' && typeof item.source3 === 'string') ? item.source3.slice(0, -5) : (item.useSource.toString() === '2' ? sourceOfflineMessages2 : sourceOfflineMessages)
     sourcePrice = (item.useSourcePrice && item.useSourcePrice.toString() === '2') ? item.sourcePrice2 : sourcePriceUrl
     chrome.browserAction.setBadgeText({ text: '' })
     setTimeout(() => {
