@@ -9,64 +9,26 @@ const chrome = browser
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'lastseenblockheight', 'lastseentransactionid', 'riseUsd', 'riseBtc', 'source3', 'sourcePrice2', 'useSource', 'useSourcePrice', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
     let initObject = {}
-    if (!item.transactions) {
-      initObject.transactions = []
-    }
-    if (!item.messages) {
-      initObject.messages = []
-    }
-    if (!item.watchmessages) {
-      initObject.watchmessages = '1'
-    }
-    if (!item.lastseenblockheight) {
-      initObject.lastseenblockheight = 1
-    }
-    if (!item.lastseentransactionid) {
-      initObject.lastseentransactionid = 1
-    }
-    if (!item.checkOfflineMessages) {
-      initObject.checkOfflineMessages = '1'
-    }
-    if (!item.alertPriceChangeOnStartup) {
-      initObject.alertPriceChangeOnStartup = '1'
-    }
-    if (!item.address1 && item.address1 !== '') {
-      initObject.address1 = ''
-    }
-    if (!item.address2 && item.address2 !== '') {
-      initObject.address2 = ''
-    }
-    if (!item.address3 && item.address3 !== '') {
-      initObject.address3 = ''
-    }
-    if (!item.address4 && item.address4 !== '') {
-      initObject.address4 = ''
-    }
-    if (!item.address5 && item.address5 !== '') {
-      initObject.address5 = ''
-    }
-    if (!item.riseusd) {
-      initObject.riseusd = 0
-    }
-    if (!item.risebtc) {
-      initObject.risebtc = 0
-    }
-    if (!item.source3) {
-      initObject.source3 = ''
-    }
-    if (!item.sourcePrice2) {
-      initObject.sourcePrice2 = ''
-    }
-    if (!item.useSource) {
-      initObject.useSource = '1'
-    }
-    if (!item.useSourcePrice) {
-      initObject.useSourcePrice = '1'
-    }
+    if (!item.transactions) initObject.transactions = []
+    if (!item.messages) initObject.messages = []
+    if (!item.watchmessages) initObject.watchmessages = '1'
+    if (!item.lastseenblockheight) initObject.lastseenblockheight = 1
+    if (!item.lastseentransactionid) initObject.lastseentransactionid = 1
+    if (!item.checkOfflineMessages) initObject.checkOfflineMessages = '1'
+    if (!item.alertPriceChangeOnStartup) initObject.alertPriceChangeOnStartup = '1'
+    if (!item.address1 && item.address1 !== '') initObject.address1 = ''
+    if (!item.address2 && item.address2 !== '') initObject.address2 = ''
+    if (!item.address3 && item.address3 !== '') initObject.address3 = ''
+    if (!item.address4 && item.address4 !== '') initObject.address4 = ''
+    if (!item.address5 && item.address5 !== '') initObject.address5 = ''
+    if (!item.riseusd) initObject.riseusd = 0
+    if (!item.risebtc) initObject.risebtc = 0
+    if (!item.source3) initObject.source3 = ''
+    if (!item.sourcePrice2) initObject.sourcePrice2 = ''
+    if (!item.useSource) initObject.useSource = '1'
+    if (!item.useSourcePrice) initObject.useSourcePrice = '1'
 
-    chrome.storage.local.set(initObject, () => {
-      console.log('Initialization success')
-    })
+    chrome.storage.local.set(initObject, () => { console.log('Initialization success') })
   })
 })
 
@@ -77,18 +39,21 @@ function loadScript (scriptName, callback) {
   document.head.appendChild(script)
 }
 
-document.body.onload = loadScript('functions', () => {
-  chrome.storage.local.get([ 'useSource', 'useSourcePrice', 'source3', 'sourcePrice2', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
-    source = (item.useSource && item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
-    if (!source.endsWith('/')) {
-      source += '/'
+loadScript('functions', () => {
+  chrome.storage.local.get([ 'useSource', 'useSourcePrice', 'source3', 'sourcePrice2', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+    try {
+      source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
+    } catch (e) {
+      source = sourceUrl
     }
+    if (!source.endsWith('/')) source += '/'
     sourcePrice = (item.useSourcePrice && item.useSourcePrice.toString() === '2') ? item.sourcePrice2 : sourcePriceUrl
+
     chrome.browserAction.setBadgeText({ text: '' })
     setTimeout(() => {
       console.log('loadScript >> setTimeout has run')
-      checkPrice(startup)
-      if (item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
+      checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
+      if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
         getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
       } else {
         getLastBlockheightAtStartup(item.lastseenblockheight)
@@ -97,6 +62,9 @@ document.body.onload = loadScript('functions', () => {
     setInterval(() => {
       alarmListener()
     }, 60000)
+    setTimeout(() => {
+      startup = false
+    }, 100000)
   })
 })
 
@@ -111,10 +79,8 @@ function xhrCall (url, errorCallback = () => {}, callback = () => {}) {
             const response = JSON.parse(xhr.responseText)
             callback(response)
           } catch (e) {
-            if (!startup) {
-              console.log(e)
-              errorCallback()
-            }
+            console.log(e)
+            errorCallback()
           }
         } else {
           errorCallback()
@@ -126,7 +92,7 @@ function xhrCall (url, errorCallback = () => {}, callback = () => {}) {
 }
 
 function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
-  // the source page for last blockheight is sourceOffline + 'data/'
+  // the source page for last blockheight is source + 'data/'
   const sourceLastBlockheight = source + 'data/'
   xhrCall(sourceLastBlockheight,
     () => {
@@ -147,9 +113,7 @@ function checkPrice (alertOnStartup = false) {
   xhrCall(sourcePrice,
     () => {
       console.warn(`Could not get price from:\n${sourcePrice}`)
-      if (!startup) {
-        notifyConnectionProblems(sourcePrice)
-      }
+      notifyConnectionProblems(sourcePrice)
     },
     (response) => {
       if (Array.isArray(response)) {
@@ -157,24 +121,19 @@ function checkPrice (alertOnStartup = false) {
         if (typeof resp === 'object' && resp.id.toString().toUpperCase() === 'RISE') {
           chrome.storage.local.set({ riseusd: resp.price_usd, risebtc: resp.price_btc }, () => {
             if (alertOnStartup && startup) {
-              chrome.storage.local.get(['alertPriceChangeOnStartup'], (item) => {
-                if (item.alertPriceChangeOnStartup.toString() === '1') {
-                  // alert the price change in RISE/USD
-                  let message
-                  if (resp.percent_change_1h !== 'undefined' && resp.percent_change_24h !== 'undefined') {
-                    const change1H = parseFloat(resp.percent_change_1h, 10) || 0.00
-                    const change24H = parseFloat(resp.percent_change_24h, 10) || 0.00
-                    message = `${change1H >= 0 ? `1h: +${change1H}%` : `1h: ${change1H}%`}\n${change24H >= 0 ? `24h: +${change24H}%` : `24h: ${change24H}%`}`
-                  }
-                  const iconUrl = './images/rise_notification_price.png'
-                  chrome.notifications.create({
-                    type: 'basic',
-                    iconUrl,
-                    title: `RISE/USD ${resp.price_usd}`,
-                    message,
-                    priority: 0
-                  })
-                }
+              let message
+              if (resp.percent_change_1h !== 'undefined' && resp.percent_change_24h !== 'undefined') {
+                const change1H = parseFloat(resp.percent_change_1h, 10) || 0.00
+                const change24H = parseFloat(resp.percent_change_24h, 10) || 0.00
+                message = `${change1H >= 0 ? `1h: +${change1H}%` : `1h: ${change1H}%`}\n${change24H >= 0 ? `24h: +${change24H}%` : `24h: ${change24H}%`}`
+              }
+              const iconUrl = './images/rise_notification_price.png'
+              chrome.notifications.create({
+                type: 'basic',
+                iconUrl,
+                title: `RISE/USD ${resp.price_usd}`,
+                message,
+                priority: 0
               })
             }
           })
@@ -199,7 +158,7 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
       }
       xhrCall(url,
         () => {
-          console.warn(`Could not get offline messages:\n${url}`)
+          console.warn(`Could not get offline messages from:\n${url}`)
           notifyConnectionProblems(url)
         },
         (response) => {
@@ -212,17 +171,11 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
               // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
               const posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
               if (posResults.length > 0) {
-                posAmount = posResults.reduce((acc, value) => {
-                  acc += value.amount
-                  return acc
-                }, 0)
+                posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
               const negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1)
               if (negResults.length > 0) {
-                negAmount = negResults.reduce((acc, value) => {
-                  acc += value.amount
-                  return acc
-                }, 0)
+                negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
               results = [ ...results, ...posResults, ...negResults ]
               amount = amount + posAmount - negAmount
@@ -288,7 +241,6 @@ function alarmListener () {
     () => {
       console.warn(`Could not get transactions from:\n${url}`)
       notifyConnectionProblems(url)
-      startup = false
     },
     (response) => {
       if (typeof response === 'object') {
@@ -300,11 +252,8 @@ function alarmListener () {
             let lastid = item.lastseentransactionid
             if (startup) {
               // on startup, prevent double message for the same transaction/block
-              startup = false
               const highestBlockheight = resp.reduce((acc, value) => { acc = Math.max(acc, value.height); return acc }, 0)
-              if (highestBlockheight <= item.lastseenblockheight) {
-                return
-              }
+              if (highestBlockheight <= item.lastseenblockheight) return
             }
             const watchmessages = item.watchmessages.toString()
             if (resp[resp.length - 1].height === lastblock && resp[resp.length - 1].id === lastid) {
@@ -323,33 +272,21 @@ function alarmListener () {
                 // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
                 const posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
                 if (posResults.length > 0) {
-                  posAmount = posResults.reduce((acc, value) => {
-                    acc += value.amount
-                    return acc
-                  }, 0)
+                  posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
                 }
                 const negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
                 if (negResults.length > 0) {
-                  negAmount = negResults.reduce((acc, value) => {
-                    acc += value.amount
-                    return acc
-                  }, 0)
+                  negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
                 }
                 results = [ ...posResults, ...negResults ].sort(compare)
                 amount = longToNormalAmount(posAmount - negAmount)
               } else if (watchmessages === '2') {
                 results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1).sort(compare)
-                amount = results.reduce((acc, value) => {
-                  acc += value.amount
-                  return acc
-                }, 0)
+                amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
                 amount = longToNormalAmount(amount)
               } else if (watchmessages === '3') {
                 results = resp.filter(c => addresses.indexOf(c.senderId) !== -1).sort(compare)
-                amount = results.reduce((acc, value) => {
-                  acc -= value.amount
-                  return acc
-                }, 0)
+                amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
                 amount = longToNormalAmount(amount)
               }
               const positiveAmount = amount > 0
@@ -379,15 +316,9 @@ function alarmListener () {
             }
           })
         } else {
-          if (startup) {
-            startup = false
-          }
           console.log('The response object does not contain any transactions')
         }
       } else {
-        if (startup) {
-          startup = false
-        }
         console.warn('The response was not an object')
       }
     })

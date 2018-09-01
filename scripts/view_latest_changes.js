@@ -89,18 +89,18 @@ function start () {
     if (item.transactions) {
       // the entries in the array go from old to new, so array needs to be reversed first; senderId determines whether the transaction is considered incoming or outgoing
       const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
-      const json = item.transactions.concat([]).reverse()
+      const data = item.transactions.concat([]).reverse()
       const titlemessages = item.messages.concat([]).reverse()
-      if (Array.isArray(json)) {
-        for (let i = 0; i < json.length; i++) {
+      if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
           const name = `messages${i + 1}`
           const title = document.createElement('H3')
           title.setAttribute('id', name + 'title')
           title.setAttribute('class', 'title ui block header')
           title.textContent = titlemessages[i]
           document.getElementById(name).appendChild(title)
-          for (let j = 0; j < json[i].length; j++) {
-            let temp = json[i][j]
+          for (let j = 0; j < data[i].length; j++) {
+            let temp = data[i][j]
             const base = ' base'
             const detail = ' detail'
             let info = base
@@ -174,7 +174,7 @@ function start () {
                 txt = getElement(labels[item], `${description} (${labels['code']} ${temp[item]})`)
                 info = base
               } else {
-                txt = getElement(capitalize(item), temp[item])
+                txt = getElement(labels[item] || capitalize(item), temp[item])
                 info = detail
               }
               node.appendChild(txt)
