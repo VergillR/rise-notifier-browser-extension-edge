@@ -1,5 +1,6 @@
 <html>
 <head>
+  <meta name="format-detection" content="telephone=no"/>
   <link rel="stylesheet" href="./styles/semantic.min.css">
   <link rel="stylesheet" href="./styles/custom.css">
 </head>
@@ -11,23 +12,23 @@
     <label id="i_address1"></label><a id="address1url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
     <div class="ui fluid input">
     <input id="address1" name="address1" type="text" pattern="^\d{15,30}R$/i" class="userinput">
-    </div><div id="address1note" class="ui red warning message" hidden></div>
+    </div><div id="address1note" class="ui red warning message" hidden></div><span id="address1amount"></span><span id="address1delegate"></span>
   </div> 
   <div class="ui segment">
     <label id="i_address2"></label><a id="address2url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
-    <div class="ui fluid input"><input id="address2" name="address2" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address2note" class="ui red warning message" hidden></div>
+    <div class="ui fluid input"><input id="address2" name="address2" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address2note" class="ui red warning message" hidden></div><span id="address2amount"></span><span id="address2delegate"></span>
   </div>
   <div class="ui segment">
     <label id="i_address3"></label><a id="address3url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
-    <div class="ui fluid input"><input id="address3" name="address3" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address3note" class="ui red warning message" hidden></div>
+    <div class="ui fluid input"><input id="address3" name="address3" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address3note" class="ui red warning message" hidden></div><span id="address3amount"></span><span id="address3delegate"></span>
   </div>
   <div class="ui segment">
     <label id="i_address4"></label><a id="address4url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
-    <div class="ui fluid input"><input id="address4" name="address4" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address4note" class="ui red warning message" hidden></div>
+    <div class="ui fluid input"><input id="address4" name="address4" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address4note" class="ui red warning message" hidden></div><span id="address4amount"></span><span id="address4delegate"></span>
   </div>
   <div class="ui segment">
     <label id="i_address5"></label><a id="address5url" href="" target="_blank" rel="noopener" hidden><div class="ui left pointing violet label blockexplorer"></div></a>
-    <div class="ui fluid input"><input id="address5" name="address5" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address5note" class="ui red warning message" hidden></div>
+    <div class="ui fluid input"><input id="address5" name="address5" type="text" pattern="^\d{15,30}R$/i" class="userinput"></div><div id="address5note" class="ui red warning message" hidden></div><span id="address5amount"></span><span id="address5delegate"></span>
   </div>
   <div class="ui segment bottom attached">
     <div class="ui small buttons">
@@ -96,16 +97,6 @@
     <div class="ui radio checkbox">
       <input name="datasource" type="radio" value="3" id="datasource3">
       <label id="datasourcelabel3"></label><input type="url" class="urlinput" id="source3" size="60" />
-    </div><br />
-  </div>
-  <div class="ui attached segment">
-    <div class="ui radio checkbox">
-      <input name="pricesource" type="radio" value="1" id="pricesource1">
-      <label id="pricesourcelabel1"></label><input type="url" readonly id="price1" size="60" />
-    </div><br />
-    <div class="ui radio checkbox">
-      <input name="pricesource" type="radio" value="2" id="pricesource2">
-      <label id="pricesourcelabel2"></label><input type="url" class="urlinput" id="price2" size="60" />
     </div><br />
   </div>
   <div class="ui segment bottom attached end">

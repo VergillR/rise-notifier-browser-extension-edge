@@ -1,13 +1,12 @@
-/* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2, sourcePriceUrl */
+/* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2 */
 /** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, August 2018 */
 // Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
 let source
-let sourcePrice
 let startup = true
 const chrome = browser
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'lastseenblockheight', 'lastseentransactionid', 'riseUsd', 'riseBtc', 'source3', 'sourcePrice2', 'useSource', 'useSourcePrice', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'lastseentransactionid', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
     let initObject = {}
     if (!item.transactions) initObject.transactions = []
     if (!item.messages) initObject.messages = []
@@ -16,6 +15,16 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.lastseentransactionid) initObject.lastseentransactionid = 1
     if (!item.checkOfflineMessages) initObject.checkOfflineMessages = '1'
     if (!item.alertPriceChangeOnStartup) initObject.alertPriceChangeOnStartup = '1'
+    if (!item.address1amount) initObject.address1amount = 0
+    if (!item.address2amount) initObject.address2amount = 0
+    if (!item.address3amount) initObject.address3amount = 0
+    if (!item.address4amount) initObject.address4amount = 0
+    if (!item.address5amount) initObject.address5amount = 0
+    if (!item.address1delegate) initObject.address1delegate = ''
+    if (!item.address2delegate) initObject.address2delegate = ''
+    if (!item.address3delegate) initObject.address3delegate = ''
+    if (!item.address4delegate) initObject.address4delegate = ''
+    if (!item.address5delegate) initObject.address5delegate = ''
     if (!item.address1 && item.address1 !== '') initObject.address1 = ''
     if (!item.address2 && item.address2 !== '') initObject.address2 = ''
     if (!item.address3 && item.address3 !== '') initObject.address3 = ''
@@ -24,9 +33,7 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.riseusd) initObject.riseusd = 0
     if (!item.risebtc) initObject.risebtc = 0
     if (!item.source3) initObject.source3 = ''
-    if (!item.sourcePrice2) initObject.sourcePrice2 = ''
     if (!item.useSource) initObject.useSource = '1'
-    if (!item.useSourcePrice) initObject.useSourcePrice = '1'
 
     chrome.storage.local.set(initObject, () => { console.log('Initialization success') })
   })
@@ -40,19 +47,18 @@ function loadScript (scriptName, callback) {
 }
 
 loadScript('functions', () => {
-  chrome.storage.local.get([ 'useSource', 'useSourcePrice', 'source3', 'sourcePrice2', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+  chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
     try {
       source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
     } catch (e) {
       source = sourceUrl
     }
     if (!source.endsWith('/')) source += '/'
-    sourcePrice = (item.useSourcePrice && item.useSourcePrice.toString() === '2') ? item.sourcePrice2 : sourcePriceUrl
-
     chrome.browserAction.setBadgeText({ text: '' })
     setTimeout(() => {
       console.log('loadScript >> setTimeout has run')
       checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
+      checkAccounts(true, false)
       if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
         getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
       } else {
@@ -109,11 +115,50 @@ function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
     })
 }
 
+function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = false) {
+  chrome.storage.local.get([ 'address1', 'address2', 'address3', 'address4', 'address5' ], (item) => {
+    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
+    let amountObj = {}
+    let delegatesObj = {}
+    if (addresses.length > 0) {
+      let url = `${source}accounts?delegate=${includeDelegateInfo ? 1 : 0}`
+      for (let z = 0; z < addresses.length; z++) {
+        url += `&address${z + 1}=${addresses[z] || 1}`
+      }
+      xhrCall(url,
+        () => {
+          console.warn(`Could not get account information from:\n${url}`)
+          notifyConnectionProblems(url)
+        },
+        (response) => {
+          if (Array.isArray(response) && response.length > 0) {
+            for (let i = 0; i < response.length; i++) {
+              if (response[i] !== null) {
+                try {
+                  if (allowUnconfirmedBalance) {
+                    amountObj[`address${i + 1}amount`] = response[i].account.unconfirmedBalance
+                  } else {
+                    amountObj[`address${i + 1}amount`] = response[i].account.balance
+                  }
+                } catch (e) {}
+                if (includeDelegateInfo) {
+                  try { delegatesObj[`address${i + 1}delegate`] = response[i].delegates[0].username } catch (e) {}
+                }
+              }
+            }
+            chrome.storage.local.set(Object.assign({}, amountObj, delegatesObj))
+          }
+        })
+    }
+  })
+}
+
 function checkPrice (alertOnStartup = false) {
-  xhrCall(sourcePrice,
+  const sourcePriceUrl = source + 'prices/'
+  xhrCall(sourcePriceUrl,
     () => {
-      console.warn(`Could not get price from:\n${sourcePrice}`)
-      notifyConnectionProblems(sourcePrice)
+      console.warn(`Could not get price from:\n${sourcePriceUrl}`)
+      notifyConnectionProblems(sourcePriceUrl)
     },
     (response) => {
       if (Array.isArray(response)) {
@@ -301,6 +346,8 @@ function alarmListener () {
                 const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
                 positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
                 chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
+                  // get new account balances (including unconfirmed balances)
+                  checkAccounts(false, true)
                   // notify the user
                   chrome.browserAction.setBadgeText({ text: length.toString() })
                   const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'

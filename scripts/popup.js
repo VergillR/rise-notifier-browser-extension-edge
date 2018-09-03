@@ -1,5 +1,5 @@
-/* global chrome, browser, version, getText, sourcePriceUrl */
-let sourcePrice
+/* global browser, chrome, version, getText, sourceUrl, sourceUrl2 */
+let activeSource
 
 function start () {
   document.title = getText('extName')
@@ -16,13 +16,20 @@ function start () {
     'lastsystemblockheight',
     'riseusd',
     'risebtc',
-    'useSourcePrice',
-    'sourcePrice2'
+    'useSource',
+    'source3'
   ], function (item) {
     let numberOfValidAddresses = ([ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter(c => c.match(/^\d{15,30}R$/i))).length
     const watchmessages = item.watchmessages.toString()
     document.getElementById('numberofvalidaddresses').textContent = numberOfValidAddresses === 1 ? numberOfValidAddresses.toString() + ' RISE ' + getText('p_address') : numberOfValidAddresses.toString() + ' RISE ' + getText('p_addresses')
-
+    // sourceUrl and sourceUrl2 are defined in functions.js; only the user defined source3 is retrieved from local storage
+    if (item.useSource.toString() === '1') {
+      activeSource = sourceUrl
+    } else if (item.useSource.toString() === '2') {
+      activeSource = sourceUrl2
+    } else if (item.useSource.toString() === '3') {
+      activeSource = item.source3
+    }
     if (watchmessages === '3') {
       document.getElementById('watchingmessages').textContent = getText('watch_outgoing')
     } else if (watchmessages === '2') {
@@ -30,8 +37,8 @@ function start () {
     } else {
       document.getElementById('watchingmessages').textContent = getText('watch_all')
     }
-    sourcePrice = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePriceUrl
     if (!checkPrice()) {
+      // if checkPrice fails then use the last recorded values from storage
       document.getElementById('riseusd').textContent = item.riseusd.toString()
       document.getElementById('risebtc').textContent = item.risebtc.toString()
     }
@@ -39,7 +46,8 @@ function start () {
 }
 
 function checkPrice () {
-  if (sourcePrice !== undefined) {
+  if (activeSource !== undefined) {
+    const sourcePrice = activeSource.endsWith('/') ? activeSource + 'prices/' : activeSource + '/prices/'
     let xhr = new window.XMLHttpRequest()
     xhr.open('GET', sourcePrice, true)
     xhr.onreadystatechange = () => {

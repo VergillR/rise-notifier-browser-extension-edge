@@ -75,6 +75,10 @@ div.senderId {
 .ui.segment.clickable {
   cursor: pointer;
 }
+span.val {
+  word-wrap: break-word;
+  overflow: hidden;
+}
 #bottombutton {
   background-color: linen !important;
   border: none !important;

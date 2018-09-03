@@ -1,4 +1,7 @@
-/* global chrome, browser, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalizeInputValue */
+/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalizeInputValue, longToNormalAmount */
+let currentaddress1
+let currentaddress2
+let currentaddress3
 
 function restoreOptions () {
   enterAnimation()
@@ -20,14 +23,31 @@ function restoreOptions () {
   chrome.storage.local.get([
     'address1',
     'address2',
-    'address3'
+    'address3',
+    'address1amount',
+    'address2amount',
+    'address3amount',
+    'address1delegate',
+    'address2delegate',
+    'address3delegate'
   ], function (item) {
+    currentaddress1 = item.address1
+    currentaddress2 = item.address2
+    currentaddress3 = item.address3
     const addresses = [ item.address1, item.address2, item.address3 ]
     addresses.map((val, index) => {
       document.getElementById(`address${index + 1}`).value = val || ''
       if (val) {
         document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
         document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
+        if (item[`address${index + 1}amount`]) {
+          document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
+          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui label`)
+        }
+        if (item[`address${index + 1}delegate`]) {
+          document.getElementById(`address${index + 1}delegate`).textContent = item[`address${index + 1}delegate`]
+          document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui label`)
+        }
       }
     })
   })
@@ -35,6 +55,7 @@ function restoreOptions () {
 
 function validateAddress (address, addressnr) {
   // address is either empty string or matches the regex /^\d{15,30}R$/
+  console.log(`${address} has match ${address.match(/^\d{15,30}R$/)}`)
   if (address === '' || address.match(/^\d{15,30}R$/)) {
     document.getElementById(`address${addressnr + 1}note`).textContent = ''
     document.getElementById(`address${addressnr + 1}note`).setAttribute('hidden', 'hidden')
@@ -53,11 +74,23 @@ function saveOptions () {
 
   const allAddressesValid = ([ address1, address2, address3 ].map((c, index) => validateAddress(c, index))).filter(c => !c).length === 0
   if (allAddressesValid) {
-    chrome.storage.local.set({
-      address1,
-      address2,
-      address3
-    }, function () {
+    let changeObj = {}
+    if (address1 !== currentaddress1) {
+      changeObj.address1 = address1
+      changeObj.address1amount = 0
+      changeObj.address1delegate = ''
+    }
+    if (address2 !== currentaddress2) {
+      changeObj.address2 = address2
+      changeObj.address2amount = 0
+      changeObj.address2delegate = ''
+    }
+    if (address3 !== currentaddress3) {
+      changeObj.address3 = address3
+      changeObj.address3amount = 0
+      changeObj.address3delegate = ''
+    }
+    chrome.storage.local.set(changeObj, function () {
       chrome.runtime.reload()
       window.close()
     })
