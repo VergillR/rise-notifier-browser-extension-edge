@@ -36,23 +36,8 @@
   "validation_error": {
     "message": "O endereço começa com 15 a 30 números e termina com R"
   },
-  "more_addresses": {
-    "message": "Mais endereços"
-  },
-  "opt_title_addresses": {
-    "message": "Opções - Endereços"
-  },
-  "opt_title_transactions": {
-    "message": "Opções - Transações"
-  },
-  "opt_title_options": {
+  "options": {
     "message": "Opções"
-  },
-  "opt_riseaddresses": {
-    "message": "RISE Endereços"
-  },
-  "opt_riseaddress": {
-    "message": "Endereço"
   },
   "opt_address_placeholder": {
     "message": "Insira o RISE endereço aqui..."
@@ -186,10 +171,13 @@
   "p_viewlastmessages": {
     "message": "Veja as últimas mensagens"
   },
-  "p_address": {
+  "address": {
     "message": "endereço"
   },
-  "p_addresses": {
+  "addresses": {
     "message": "endereços"
+  },
+  "more_addresses": {
+    "message": "Mais endereços"
   }
 }

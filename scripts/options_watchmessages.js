@@ -1,8 +1,8 @@
-/* global chrome, enterAnimation, leaveAnimation, version, getText */
+/* global chrome, enterAnimation, leaveAnimation, version, capitalize, getText */
 
 function start () {
   enterAnimation()
-  document.title = getText('opt_title_transactions')
+  document.title = capitalize(getText('n_transactions'))
   document.getElementById('i_title').textContent = getText('extName') + ' ' + version
   document.getElementById('savemessages').textContent = getText('button_save')
   document.getElementById('cancelmessages').textContent = getText('button_cancel')

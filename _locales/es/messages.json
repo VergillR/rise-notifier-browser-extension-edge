@@ -36,23 +36,8 @@
   "validation_error": {
     "message": "La dirección comienza con 15 a 30 números y termina con R"
   },
-  "more_addresses": {
-    "message": "Más direcciones"
-  },
-  "opt_title_addresses": {
-    "message": "Opciones - Direcciones"
-  },
-  "opt_title_transactions": {
-    "message": "Opciones - Transacciones"
-  },
-  "opt_title_options": {
+  "options": {
     "message": "Opciones"
-  },
-  "opt_riseaddresses": {
-    "message": "RISE Direcciones"
-  },
-  "opt_riseaddress": {
-    "message": "Dirección"
   },
   "opt_address_placeholder": {
     "message": "Ingrese la dirección aquí..."
@@ -186,10 +171,13 @@
   "p_viewlastmessages": {
     "message": "Ver los últimos mensajes"
   },
-  "p_address": {
+  "address": {
     "message": "dirección"
   },
-  "p_addresses": {
+  "addresses": {
     "message": "direcciones"
+  },
+  "more_addresses": {
+    "message": "Más direcciones"
   }
 }

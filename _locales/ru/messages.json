@@ -36,23 +36,8 @@
   "validation_error": {
     "message": "Адрес начинается от 15 до 30 цифр и заканчивается буквой R"
   },
-  "more_addresses": {
-    "message": "больше адресов"
-  },
-  "opt_title_addresses": {
-    "message": "настройка - адреса"
-  },
-  "opt_title_transactions": {
-    "message": "настройка - транзакции"
-  },
-  "opt_title_options": {
+  "options": {
     "message": "настройка"
-  },
-  "opt_riseaddresses": {
-    "message": "RISE адреса"
-  },
-  "opt_riseaddress": {
-    "message": "адрес"
   },
   "opt_address_placeholder": {
     "message": "введите RISE адрес здесь..."
@@ -186,10 +171,13 @@
   "p_viewlastmessages": {
     "message": "смотреть последние сообщения"
   },
-  "p_address": {
+  "address": {
     "message": "адрес"
   },
-  "p_addresses": {
+  "addresses": {
     "message": "адреса"
+  },
+  "more_addresses": {
+    "message": "больше адресов"
   }
 }

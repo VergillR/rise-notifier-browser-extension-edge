@@ -21,7 +21,7 @@ function start () {
   ], function (item) {
     let numberOfValidAddresses = ([ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter(c => c.match(/^\d{15,30}R$/i))).length
     const watchmessages = item.watchmessages.toString()
-    document.getElementById('numberofvalidaddresses').textContent = numberOfValidAddresses === 1 ? numberOfValidAddresses.toString() + ' RISE ' + getText('p_address') : numberOfValidAddresses.toString() + ' RISE ' + getText('p_addresses')
+    document.getElementById('numberofvalidaddresses').textContent = numberOfValidAddresses === 1 ? numberOfValidAddresses.toString() + ' RISE ' + getText('address') : numberOfValidAddresses.toString() + ' RISE ' + getText('addresses')
     // sourceUrl and sourceUrl2 are defined in functions.js; only the user defined source3 is retrieved from local storage
     if (item.useSource.toString() === '1') {
       activeSource = sourceUrl

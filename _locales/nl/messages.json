@@ -36,23 +36,8 @@
   "validation_error": {
     "message": "Het adres begint met 15 tot 30 getallen en eindigt met R"
   },
-  "more_addresses": {
-    "message": "Meer adressen"
-  },
-  "opt_title_addresses": {
-    "message": "Opties - Adressen"
-  },
-  "opt_title_transactions": {
-    "message": "Opties - Transacties"
-  },
-  "opt_title_options": {
+  "options": {
     "message": "Opties"
-  },
-  "opt_riseaddresses": {
-    "message": "RISE Adressen"
-  },
-  "opt_riseaddress": {
-    "message": "Adres"
   },
   "opt_address_placeholder": {
     "message": "Vul hier het RISE adres in..."
@@ -186,10 +171,13 @@
   "p_viewlastmessages": {
     "message": "Bekijk laatste meldingen"
   },
-  "p_address": {
+  "address": {
     "message": "adres"
   },
-  "p_addresses": {
+  "addresses": {
     "message": "adressen"
+  },
+  "more_addresses": {
+    "message": "Meer adressen"
   }
 }

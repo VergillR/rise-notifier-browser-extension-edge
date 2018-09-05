@@ -1,4 +1,4 @@
-/* global chrome, version, getText, sourceUrl2, explorerUrl, capitalizeInputValue, longToNormalAmount */
+/* global chrome, version, getText, sourceUrl2, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount */
 let currentaddresses = []
 
 function validateAddress (address, addressnr) {
@@ -15,12 +15,12 @@ function validateAddress (address, addressnr) {
 }
 
 function restoreAllOptions () {
-  document.title = getText('opt_title_options')
+  document.title = getText('options')
   document.getElementById('i_title').textContent = getText('extName') + ' ' + version
-  document.getElementById('i_addresses').textContent = getText('opt_riseaddresses')
+  document.getElementById('i_addresses').textContent = 'RISE ' + getText('addresses')
   const ids = [ 'i_address1', 'i_address2', 'i_address3', 'i_address4', 'i_address5' ]
   for (let i = 0; i < ids.length; i++) {
-    document.getElementById(ids[i]).textContent = `${getText('opt_riseaddress')} ${i + 1} :`
+    document.getElementById(ids[i]).textContent = `${capitalize(getText('address'))} ${i + 1} :`
   }
   document.getElementById('saveaddresses').textContent = getText('button_save')
   document.getElementById('savemessages').textContent = getText('button_save')

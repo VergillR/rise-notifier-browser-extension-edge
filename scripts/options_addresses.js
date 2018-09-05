@@ -1,17 +1,17 @@
-/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalizeInputValue, longToNormalAmount */
+/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount */
 let currentaddress1
 let currentaddress2
 let currentaddress3
 
 function restoreOptions () {
   enterAnimation()
-  document.title = getText('opt_title_addresses')
+  document.title = capitalize(getText('addresses'))
   document.getElementById('i_title').textContent = getText('extName') + ' ' + version
   document.getElementById('moreaddresses').textContent = getText('more_addresses')
-  document.getElementById('i_addresses').textContent = getText('opt_riseaddresses')
-  document.getElementById('i_address1').textContent = getText('opt_riseaddress') + ' 1:'
-  document.getElementById('i_address2').textContent = getText('opt_riseaddress') + ' 2:'
-  document.getElementById('i_address3').textContent = getText('opt_riseaddress') + ' 3:'
+  document.getElementById('i_addresses').textContent = 'RISE ' + capitalize(getText('addresses'))
+  document.getElementById('i_address1').textContent = capitalize(getText('address')) + ' 1:'
+  document.getElementById('i_address2').textContent = capitalize(getText('address')) + ' 2:'
+  document.getElementById('i_address3').textContent = capitalize(getText('address')) + ' 3:'
   document.getElementById('saveaddresses').textContent = getText('button_save')
   document.getElementById('canceladdresses').textContent = getText('button_cancel')
   document.querySelectorAll('.blockexplorer').forEach((elem) => {
