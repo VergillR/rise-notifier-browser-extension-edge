@@ -1,6 +1,9 @@
 /* global browser, chrome, version, getText, sourceUrl, sourceUrl2 */
 let activeSource
 
+/**
+ * Read all necessary info from localStorage and populate the web page with that information whenever the options page is opened
+ */
 function start () {
   document.title = getText('extName')
   document.getElementById('view').textContent = getText('p_viewlastmessages')
@@ -37,15 +40,18 @@ function start () {
     } else {
       document.getElementById('watchingmessages').textContent = getText('watch_all')
     }
-    if (!checkPrice()) {
-      // if checkPrice fails then use the last recorded values from storage
+    if (!getPrice()) {
+      // if getPrice fails then use the last recorded values from storage
       document.getElementById('riseusd').textContent = item.riseusd.toString()
       document.getElementById('risebtc').textContent = item.risebtc.toString()
     }
   })
 }
 
-function checkPrice () {
+/**
+ * Request price info from source
+ */
+function getPrice () {
   if (activeSource !== undefined) {
     const sourcePrice = activeSource.endsWith('/') ? activeSource + 'prices/' : activeSource + '/prices/'
     let xhr = new window.XMLHttpRequest()
@@ -81,6 +87,9 @@ function checkPrice () {
   }
 }
 
+/**
+ * Open the page with the last messages
+ */
 function viewLastMessages () {
   chrome.browserAction.setBadgeText({text: ''})
   window.close()

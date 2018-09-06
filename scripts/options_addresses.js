@@ -1,8 +1,11 @@
-/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount */
+/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
 let currentaddress1
 let currentaddress2
 let currentaddress3
 
+/**
+ * Read all necessary info from localStorage and populate the web page with that information whenever the options page is opened
+ */
 function restoreOptions () {
   enterAnimation()
   document.title = capitalize(getText('addresses'))
@@ -53,10 +56,15 @@ function restoreOptions () {
   })
 }
 
+/**
+ * Check if the given address is a valid RISE address; also, show an error on the web page if the address was not valid
+ * @param {string} address
+ * @param {number} addressnr
+ * @returns {boolean} validity
+ */
 function validateAddress (address, addressnr) {
-  // address is either empty string or matches the regex /^\d{15,30}R$/
-  console.log(`${address} has match ${address.match(/^\d{15,30}R$/)}`)
-  if (address === '' || address.match(/^\d{15,30}R$/)) {
+  // address is either empty string or matches the riseRegex
+  if (address === '' || address.match(riseRegex)) {
     document.getElementById(`address${addressnr + 1}note`).textContent = ''
     document.getElementById(`address${addressnr + 1}note`).setAttribute('hidden', 'hidden')
     return true
@@ -67,6 +75,9 @@ function validateAddress (address, addressnr) {
   }
 }
 
+/**
+ * Validate the user input and if there were no errors, save all user input to localStorage and reload the app
+ */
 function saveOptions () {
   const address1 = capitalizeInputValue('address1').trim()
   const address2 = capitalizeInputValue('address2').trim()
@@ -97,6 +108,9 @@ function saveOptions () {
   }
 }
 
+/**
+ * Open the options page and close the current window
+ */
 function gotoOptions () {
   window.close()
   browser.windows.create({
@@ -104,6 +118,9 @@ function gotoOptions () {
   })
 }
 
+/**
+ * Closes the current window and return to the popup screen
+ */
 function closeOptions () {
   leaveAnimation(-800)
   setTimeout(() => {

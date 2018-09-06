@@ -1,4 +1,4 @@
-/* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2 */
+/* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2, riseRegex */
 /** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, August 2018 */
 // Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
 let source
@@ -39,6 +39,11 @@ chrome.runtime.onInstalled.addListener(() => {
   })
 })
 
+/**
+ * Load an outside script (holding the global variables and functions) into the current file
+ * @param {string} scriptName The script (with global functions) that needs to be imported
+ * @param {function} callback Function that is called after the script was imported
+ */
 function loadScript (scriptName, callback) {
   const script = document.createElement('script')
   script.src = chrome.extension.getURL(`./scripts/${scriptName}.js`)
@@ -74,6 +79,12 @@ loadScript('functions', () => {
   })
 })
 
+/**
+ * Send a request for information to the target site
+ * @param {string} url The url of the target site
+ * @param {function} errorCallback Callback function to be called when an error has occurred
+ * @param {function} successCallback Callback function to be called after a response was received
+ */
 function xhrCall (url, errorCallback = () => {}, callback = () => {}) {
   if (url !== undefined) {
     let xhr = new window.XMLHttpRequest()
@@ -97,6 +108,10 @@ function xhrCall (url, errorCallback = () => {}, callback = () => {}) {
   }
 }
 
+/**
+ * Request the highest (most recent) block height from the source; then record the highest block height into localStorage
+ * @param {number} [lastSeenBlockheight=1] The highest block height that was recorded by the program
+ */
 function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
   // the source page for last blockheight is source + 'data/'
   const sourceLastBlockheight = source + 'data/'
@@ -115,6 +130,11 @@ function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
     })
 }
 
+/**
+ * Request and process account info of all the RISE addresses stored in localStorage; optionally, request delegate info as well
+ * @param {boolean} [includeDelegateInfo=false] Whether or not to also request delegate info
+ * @param {boolean} [allowUnconfirmedBalance=false] Whether or not to request unconfirmed balance (if false, request confirmed balance)
+ */
 function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = false) {
   chrome.storage.local.get([ 'address1', 'address2', 'address3', 'address4', 'address5' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
@@ -153,6 +173,10 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = f
   })
 }
 
+/**
+ * Request price info; optionally, also display a price notification
+ * @param {boolean} [alertOnStartup=false] Whether or not to show a notification (only used at startup)
+ */
 function checkPrice (alertOnStartup = false) {
   const sourcePriceUrl = source + 'prices/'
   xhrCall(sourcePriceUrl,
@@ -187,14 +211,23 @@ function checkPrice (alertOnStartup = false) {
     })
 }
 
+/**
+ * Sort transaction objects from new to old based on their timestamp
+ * @param {{ timestamp: number }} a Object containing all properties of a transaction, including the property timestamp
+ * @param {{ timestamp: number }} b Object containing all properties of a transaction, including the property timestamp
+ */
 function compare (a, b) {
-  // sort from new to old based on timestamp
   return b.timestamp - a.timestamp
 }
 
+/**
+ * Request transactions for the period (based on block height) that the extension was offline
+ * @param {number} [type=1] Type of transactions to request: 1 = all, 2 = only incoming, 3 = only outgoing
+ * @param {function} callbackOnComplete Callback function to be called after a response was received
+ */
 function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
   chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
-    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(/^\d{15,30}R$/))
+    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
     if (addresses.length > 0) {
       const typeUrl = type === '1' ? 'fetchall' : (type === '2' ? 'fetchin' : 'fetchout')
       let url = `${source}${typeUrl}?blockheight=${item.lastseenblockheight}`
@@ -264,6 +297,10 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
   })
 }
 
+/**
+ * Display a notification in case an error occurred after calling xhrCall(), e.g. when the server did not respond or the url does not exist
+ * @param {string} url Url of the target site
+ */
 function notifyConnectionProblems (url) {
   chrome.browserAction.getBadgeText({}, (result) => {
     if (result !== 'X') {
@@ -280,6 +317,9 @@ function notifyConnectionProblems (url) {
   })
 }
 
+/**
+ * After every time interval, send a request to the source to check recent transactions; if a transaction involved one of the RISE addresses stored in localStorage then display a notification
+ */
 function alarmListener () {
   const url = source + 'rise/'
   xhrCall(url,

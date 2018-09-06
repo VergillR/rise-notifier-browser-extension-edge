@@ -1,5 +1,8 @@
 /* global chrome, enterAnimation, leaveAnimation, version, capitalize, getText */
 
+/**
+ * Read all necessary info from localStorage and populate the web page with that information whenever the options page is opened
+ */
 function start () {
   enterAnimation()
   document.title = capitalize(getText('n_transactions'))
@@ -25,6 +28,9 @@ function start () {
   })
 }
 
+/**
+ * Save all user input to localStorage and reload the app
+ */
 function saveOptions () {
   let watchmessages = document.querySelector('input[name="watch"]:checked').value
   chrome.storage.local.set({
@@ -35,6 +41,9 @@ function saveOptions () {
   })
 }
 
+/**
+ * Closes the current window and return to the popup screen
+ */
 function closeOptions () {
   leaveAnimation(-400)
   setTimeout(() => {

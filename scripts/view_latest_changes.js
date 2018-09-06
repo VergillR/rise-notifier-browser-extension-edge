@@ -1,7 +1,15 @@
 /* global chrome, moment, getText, longToNormalAmount, riseEpoch, capitalize, getElement */
+/**
+ * Converts a RISE timestamp to a human readable date
+ * @param {number} riseTimestamp The timestamp as recorded on the RISE network
+ * @returns {string} Date
+ */
 const getMomentFromRiseTimestamp = (riseTimestamp) => moment(riseEpoch * 1000).add(riseTimestamp, 'seconds').format(getText('momentformat'))
 let labels = {}
 
+/**
+ * Toggles the visibility of transaction details
+ */
 function showDetails () {
   let el = document.getElementById('showdetails')
   if (el.getAttribute('class') === 'show ui teal button') {
@@ -19,9 +27,16 @@ function showDetails () {
   }
 }
 
+/** The Labels object contains all label fields with their correct translation
+ * @typedef {Object} Labels
+ */
+
+/**
+ * Preloads and returns all text for the labels to increase performance
+ * @returns {Labels} Labels object which contains translated text for all known label fields
+ */
 function preloadLabels () {
   // the field 'confirmations' is ignored as confirmations have no meaning in notifications
-  // all other fields not in the list, are still shown but with their (English) names given by the RISE devs
   const labels = {}
   const allKnownFields = [ 'senderId', 'recipientId', 'height', 'blockId', 'timestamp', 'amount', 'fee', 'id', 'signatures', 'asset', 'type', 'rowId', 'signSignature', 'recipientPublicKey', 'requesterPublicKey', 'senderPublicKey', 'signature', 'code', '0', '1', '2', '3', '4', '5', '6', '7' ]
   for (let i = 0; i < allKnownFields.length; i++) {
@@ -78,6 +93,9 @@ function preloadLabels () {
   return labels
 }
 
+/**
+ * Read all necessary info from localStorage and populate the web page with that information whenever the options page is opened
+ */
 function start () {
   moment.locale(getText('locale'))
   labels = Object.freeze(preloadLabels())
