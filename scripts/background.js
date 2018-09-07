@@ -3,16 +3,16 @@
 // Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
 let source
 let startup = true
+let lastMatchIds = []
 const chrome = browser
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'lastseentransactionid', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
     let initObject = {}
     if (!item.transactions) initObject.transactions = []
     if (!item.messages) initObject.messages = []
     if (!item.watchmessages) initObject.watchmessages = '1'
     if (!item.lastseenblockheight) initObject.lastseenblockheight = 1
-    if (!item.lastseentransactionid) initObject.lastseentransactionid = 1
     if (!item.checkOfflineMessages) initObject.checkOfflineMessages = '1'
     if (!item.alertPriceChangeOnStartup) initObject.alertPriceChangeOnStartup = '1'
     if (!item.address1amount) initObject.address1amount = 0
@@ -189,7 +189,7 @@ function checkPrice (alertOnStartup = false) {
         const resp = response[0]
         if (typeof resp === 'object' && resp.id.toString().toUpperCase() === 'RISE') {
           chrome.storage.local.set({ riseusd: resp.price_usd, risebtc: resp.price_btc }, () => {
-            if (alertOnStartup && startup) {
+            if (startup && alertOnStartup) {
               let message
               if (resp.percent_change_1h !== 'undefined' && resp.percent_change_24h !== 'undefined') {
                 const change1H = parseFloat(resp.percent_change_1h, 10) || 0.00
@@ -243,6 +243,7 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
           if (Array.isArray(response) && response.length > 0) {
             let results = []
             let amount = 0
+            let highestblockheight = response[0]
             for (let i = 0; i < response.length; i++) {
               let posAmount = 0
               let negAmount = 0
@@ -274,7 +275,7 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
               positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
               chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
                 // update the blockheight to the newest system data
-                callbackOnComplete(item.lastseenblockheight)
+                callbackOnComplete(highestblockheight)
                 // notify the user
                 chrome.browserAction.setBadgeText({ text: length.toString() })
                 const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
@@ -331,75 +332,65 @@ function alarmListener () {
       if (typeof response === 'object') {
         // there was at least 1 transaction so check if it matches any given RISE addresses
         if (response.transactions.length > 0) {
-          chrome.storage.local.get(['address1', 'address2', 'address3', 'address4', 'address5', 'watchmessages', 'transactions', 'messages', 'lastseenblockheight', 'lastseentransactionid'], (item) => {
+          chrome.storage.local.get(['address1', 'address2', 'address3', 'address4', 'address5', 'watchmessages', 'transactions', 'messages', 'lastseenblockheight'], (item) => {
             const resp = response.transactions
-            let lastblock = item.lastseenblockheight
-            let lastid = item.lastseentransactionid
-            if (startup) {
-              // on startup, prevent double message for the same transaction/block
-              const highestBlockheight = resp.reduce((acc, value) => { acc = Math.max(acc, value.height); return acc }, 0)
-              if (highestBlockheight <= item.lastseenblockheight) return
-            }
+            if (startup && resp[0].height <= item.lastseenblockheight) return
+            chrome.storage.local.set({ lastseenblockheight: resp[0].height })
             const watchmessages = item.watchmessages.toString()
-            if (resp[resp.length - 1].height === lastblock && resp[resp.length - 1].id === lastid) {
-              // this response object has already been processed
-              console.log(`Already seen this response object with lastblock ${lastblock} and lastid ${lastid}`)
-            } else {
-              lastblock = resp[resp.length - 1].height
-              lastid = resp[resp.length - 1].id
-              chrome.storage.local.set({ lastseenblockheight: lastblock, lastseentransactionid: lastid })
-              let results = []
-              const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
-              let amount = 0
-              if (watchmessages === '1') {
-                let posAmount = 0
-                let negAmount = 0
-                // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
-                const posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
-                if (posResults.length > 0) {
-                  posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-                }
-                const negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
-                if (negResults.length > 0) {
-                  negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-                }
-                results = [ ...posResults, ...negResults ].sort(compare)
-                amount = longToNormalAmount(posAmount - negAmount)
-              } else if (watchmessages === '2') {
-                results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1).sort(compare)
-                amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-                amount = longToNormalAmount(amount)
-              } else if (watchmessages === '3') {
-                results = resp.filter(c => addresses.indexOf(c.senderId) !== -1).sort(compare)
-                amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
-                amount = longToNormalAmount(amount)
+            let results = []
+            const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
+            let amount = 0
+            if (watchmessages === '1') {
+              let posAmount = 0
+              let negAmount = 0
+              // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
+              const posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
+              if (posResults.length > 0) {
+                posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
-              const positiveAmount = amount > 0
-              const length = results.length
-              if (length > 0) {
-                amount = Math.abs(amount)
-                const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
-                const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
-                // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
-                const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
-                const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
-                const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
-                positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
-                chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
-                  // get new account balances (including unconfirmed balances)
-                  checkAccounts(false, true)
-                  // notify the user
-                  chrome.browserAction.setBadgeText({ text: length.toString() })
-                  const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
-                  chrome.notifications.create({
-                    type: 'basic',
-                    iconUrl,
-                    title,
-                    message,
-                    priority: 0
-                  })
+              const negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
+              if (negResults.length > 0) {
+                negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+              }
+              results = [ ...posResults, ...negResults ].sort(compare)
+              amount = longToNormalAmount(posAmount - negAmount)
+            } else if (watchmessages === '2') {
+              results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1).sort(compare)
+              amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+              amount = longToNormalAmount(amount)
+            } else if (watchmessages === '3') {
+              results = resp.filter(c => addresses.indexOf(c.senderId) !== -1).sort(compare)
+              amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
+              amount = longToNormalAmount(amount)
+            }
+            // remove any result that has the same transaction id already seen in a previous response block
+            results = results.filter((val, index) => lastMatchIds.indexOf(val) === -1)
+            const positiveAmount = amount > 0
+            const length = results.length
+            if (length > 0) {
+              lastMatchIds = results.map(c => c.id)
+              amount = Math.abs(amount)
+              const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
+              const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
+              // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
+              const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
+              const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
+              const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
+              positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
+              chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
+                // get new account balances (including unconfirmed balances)
+                checkAccounts(false, true)
+                // notify the user
+                chrome.browserAction.setBadgeText({ text: length.toString() })
+                const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
+                chrome.notifications.create({
+                  type: 'basic',
+                  iconUrl,
+                  title,
+                  message,
+                  priority: 0
                 })
-              }
+              })
             }
           })
         } else {
