@@ -50,14 +50,13 @@ const getElement = (description, value) => {
   el.innerHTML = `<span class='description'>${description}:</span> <span class='val'>${value}</span>`
   return el
 }
-
 /**
- * Simple animation where the contents slides in from top to bottom
- * @param {number} [top=100] Starting y-coordinate
+ * Simple animation where the contents slides in from right to left
+ * @param {number} [left=100] Starting x-coordinate
  */
-const enterAnimation = (top = 100) => TweenMax.from('.ui.segments', 0.8, { top, opacity: 0 })
+const enterAnimation = (left = 100) => TweenMax.from('.ui.segments', 0.8, { left, opacity: 0 })
 /**
- * Simple animation where the contents slides in from bottom to top
- * @param {number} [top=-600] Starting y-coordinate
+ * Simple animation where the contents slides in from left to right
+ * @param {number} [width=-600] Width of the target HTML element
  */
-const leaveAnimation = (top = -600) => TweenMax.to('.ui.segments', 0.8, { top, opacity: 0, ease: Power1.easeOut })
+const leaveAnimation = (width = 300) => TweenMax.to('.ui.segments', 0.8, { left: width, opacity: 0, ease: Power1.easeOut })

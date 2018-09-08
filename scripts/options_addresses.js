@@ -122,7 +122,7 @@ function gotoOptions () {
  * Closes the current window and return to the popup screen
  */
 function closeOptions () {
-  leaveAnimation(-800)
+  leaveAnimation(document.body.scrollWidth * 1.8)
   setTimeout(() => {
     window.open('./popup.html', '_self')
   }, 300)
