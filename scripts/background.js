@@ -74,7 +74,7 @@ loadScript('functions', () => {
       alarmListener()
     }, 60000)
     setTimeout(() => {
-      startup = false
+      startup = null
     }, 100000)
   })
 })
