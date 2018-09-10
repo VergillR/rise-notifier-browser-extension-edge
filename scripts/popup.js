@@ -1,4 +1,4 @@
-/* global browser, chrome, version, getText, sourceUrl, sourceUrl2 */
+/* global browser, chrome, version, getText, sourceUrl, sourceUrl2, leaveAnimation */
 let activeSource
 
 /**
@@ -96,5 +96,27 @@ function viewLastMessages () {
   browser.windows.create({ url: 'view_latest_changes.html' })
 }
 
+/**
+ * Open the options_addresses page
+ */
+function gotoOptionsAddresses () {
+  leaveAnimation(0 - document.body.scrollWidth)
+  setTimeout(() => {
+    window.open('options_addresses.html', '_self')
+  }, 500)
+}
+
+/**
+ * Open the options_watchmessages page
+ */
+function gotoWatchMessages () {
+  leaveAnimation(0 - document.body.scrollWidth)
+  setTimeout(() => {
+    window.open('options_watchmessages.html', '_self')
+  }, 500)
+}
+
 document.body.onload = start
 document.getElementById('bottombutton').addEventListener('click', viewLastMessages)
+document.getElementById('gotoaddresses').addEventListener('click', gotoOptionsAddresses)
+document.getElementById('gotowatchmessages').addEventListener('click', gotoWatchMessages)

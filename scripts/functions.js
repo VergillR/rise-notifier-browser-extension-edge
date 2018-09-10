@@ -51,12 +51,12 @@ const getElement = (description, value) => {
   return el
 }
 /**
- * Simple animation where the contents slides in from right to left
+ * Simple animation where the content slides from right to left
  * @param {number} [left=100] Starting x-coordinate
  */
 const enterAnimation = (left = 100) => TweenMax.from('.ui.segments', 0.8, { left, opacity: 0 })
 /**
- * Simple animation where the contents slides in from left to right
+ * Simple animation where the content slides from left to right
  * @param {number} [width=-600] Width of the target HTML element
  */
 const leaveAnimation = (width = 300) => TweenMax.to('.ui.segments', 0.8, { left: width, opacity: 0, ease: Power1.easeOut })

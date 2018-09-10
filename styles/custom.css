@@ -69,11 +69,14 @@ div.senderId {
   color: tomato;
   font-weight: bold;
 }
-.ui.segment.specialeffect:hover {
-  text-decoration-line: underline;
-}
 .ui.segment.clickable {
   cursor: pointer;
+}
+.ui.segment.clickable i.icon {
+  text-decoration-line: none;
+}
+.ui.segment.clickable:hover {
+  background-image: linear-gradient(to bottom right, white, #85ABFF);
 }
 span.val {
   word-wrap: break-word;
