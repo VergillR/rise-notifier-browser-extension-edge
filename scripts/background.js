@@ -51,7 +51,7 @@ function loadScript (scriptName, callback) {
   document.head.appendChild(script)
 }
 
-loadScript('functions', () => {
+loadScript('globals', () => {
   chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
     try {
       source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)

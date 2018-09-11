@@ -78,6 +78,9 @@ div.senderId {
 .ui.segment.clickable:hover {
   background-image: linear-gradient(to bottom right, white, #85ABFF);
 }
+div.ui.violet.pointing.label.blockexplorer:hover {
+  color: orange !important;
+}
 span.val {
   word-wrap: break-word;
   overflow: hidden;
