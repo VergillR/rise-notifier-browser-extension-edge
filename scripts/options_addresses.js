@@ -1,7 +1,5 @@
 /* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
-let currentaddress1
-let currentaddress2
-let currentaddress3
+let currentaddresses = []
 
 /**
  * Read all necessary info from localStorage and populate the web page with that information whenever the options page is opened
@@ -27,29 +25,45 @@ function restoreOptions () {
     'address1',
     'address2',
     'address3',
+    'address1name',
+    'address2name',
+    'address3name',
     'address1amount',
     'address2amount',
     'address3amount',
+    'address1twosig',
+    'address2twosig',
+    'address3twosig',
     'address1delegate',
     'address2delegate',
     'address3delegate'
   ], function (item) {
-    currentaddress1 = item.address1
-    currentaddress2 = item.address2
-    currentaddress3 = item.address3
-    const addresses = [ item.address1, item.address2, item.address3 ]
-    addresses.map((val, index) => {
+    currentaddresses[0] = item.address1
+    currentaddresses[1] = item.address2
+    currentaddresses[2] = item.address3
+    currentaddresses.map((val, index) => {
       document.getElementById(`address${index + 1}`).value = val || ''
       if (val) {
-        document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
-        document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
-        if (item[`address${index + 1}amount`]) {
-          document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
-          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui label`)
+        if (item[`address${index + 1}name`]) {
+          document.getElementById(`address${index + 1}name`).innerHTML = '<i class="icon teal user"></i>' + item[`address${index + 1}name`]
+          document.getElementById(`address${index + 1}name`).setAttribute('class', `ui horizontal label`)
         }
-        if (item[`address${index + 1}delegate`]) {
-          document.getElementById(`address${index + 1}delegate`).textContent = item[`address${index + 1}delegate`]
-          document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui label`)
+        if (item[`address${index + 1}amount`].toString() !== '-1') {
+          document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
+          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
+          document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
+          document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
+          if (item[`address${index + 1}twosig`]) {
+            document.getElementById(`address${index + 1}twosig`).innerHTML = '<i class="icon yellow key"></i>2 ' + getText('m_signatures').toLowerCase()
+            document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
+          }
+          if (item[`address${index + 1}delegate`]) {
+            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`]
+            document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
+          }
+        } else {
+          document.getElementById(`address${index + 1}amount`).innerHTML = `<i class="icon red exclamation triangle"></i>${getText('address_not_found')}`
+          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
         }
       }
     })
@@ -82,24 +96,19 @@ function saveOptions () {
   const address1 = capitalizeInputValue('address1').trim()
   const address2 = capitalizeInputValue('address2').trim()
   const address3 = capitalizeInputValue('address3').trim()
+  const addresses = [ address1, address2, address3 ]
 
   const allAddressesValid = ([ address1, address2, address3 ].map((c, index) => validateAddress(c, index))).filter(c => !c).length === 0
   if (allAddressesValid) {
     let changeObj = {}
-    if (address1 !== currentaddress1) {
-      changeObj.address1 = address1
-      changeObj.address1amount = 0
-      changeObj.address1delegate = ''
-    }
-    if (address2 !== currentaddress2) {
-      changeObj.address2 = address2
-      changeObj.address2amount = 0
-      changeObj.address2delegate = ''
-    }
-    if (address3 !== currentaddress3) {
-      changeObj.address3 = address3
-      changeObj.address3amount = 0
-      changeObj.address3delegate = ''
+    for (let i = 0; i < addresses.length; i++) {
+      if (addresses[i] !== currentaddresses[i]) {
+        changeObj[`address${i + 1}`] = addresses[i]
+        changeObj[`address${i + 1}name`] = ''
+        changeObj[`address${i + 1}amount`] = -1
+        changeObj[`address${i + 1}twosig`] = ''
+        changeObj[`address${i + 1}delegate`] = ''
+      }
     }
     chrome.storage.local.set(changeObj, function () {
       chrome.runtime.reload()

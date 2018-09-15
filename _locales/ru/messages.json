@@ -179,5 +179,8 @@
   },
   "more_addresses": {
     "message": "больше адресов"
+  },
+  "address_not_found": {
+    "message": "адрес не найден"
   }
 }

@@ -15,16 +15,26 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.lastseenblockheight) initObject.lastseenblockheight = 1
     if (!item.checkOfflineMessages) initObject.checkOfflineMessages = '1'
     if (!item.alertPriceChangeOnStartup) initObject.alertPriceChangeOnStartup = '1'
-    if (!item.address1amount) initObject.address1amount = 0
-    if (!item.address2amount) initObject.address2amount = 0
-    if (!item.address3amount) initObject.address3amount = 0
-    if (!item.address4amount) initObject.address4amount = 0
-    if (!item.address5amount) initObject.address5amount = 0
+    if (!item.address1amount) initObject.address1amount = -1
+    if (!item.address2amount) initObject.address2amount = -1
+    if (!item.address3amount) initObject.address3amount = -1
+    if (!item.address4amount) initObject.address4amount = -1
+    if (!item.address5amount) initObject.address5amount = -1
     if (!item.address1delegate) initObject.address1delegate = ''
     if (!item.address2delegate) initObject.address2delegate = ''
     if (!item.address3delegate) initObject.address3delegate = ''
     if (!item.address4delegate) initObject.address4delegate = ''
     if (!item.address5delegate) initObject.address5delegate = ''
+    if (!item.address1twosig) initObject.address1twosig = ''
+    if (!item.address2twosig) initObject.address2twosig = ''
+    if (!item.address3twosig) initObject.address3twosig = ''
+    if (!item.address4twosig) initObject.address4twosig = ''
+    if (!item.address5twosig) initObject.address5twosig = ''
+    if (!item.address1name) initObject.address1name = ''
+    if (!item.address2name) initObject.address2name = ''
+    if (!item.address3name) initObject.address3name = ''
+    if (!item.address4name) initObject.address4name = ''
+    if (!item.address5name) initObject.address5name = ''
     if (!item.address1 && item.address1 !== '') initObject.address1 = ''
     if (!item.address2 && item.address2 !== '') initObject.address2 = ''
     if (!item.address3 && item.address3 !== '') initObject.address3 = ''
@@ -139,7 +149,9 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
   chrome.storage.local.get([ 'address1', 'address2', 'address3', 'address4', 'address5' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
     let amountObj = {}
+    let twosigObj = {}
     let delegatesObj = {}
+    let nameObj = {}
     if (addresses.length > 0) {
       let url = `${source}accounts?delegate=${includeDelegateInfo ? 1 : 0}`
       for (let z = 0; z < addresses.length; z++) {
@@ -160,13 +172,15 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
                   } else {
                     amountObj[`address${i + 1}amount`] = response[i].account.balance
                   }
-                } catch (e) {}
+                  twosigObj[`address${i + 1}twosig`] = response[i].account.secondSignature.toString() === '1' ? '1' : ''
+                } catch (e) { amountObj[`address${i + 1}amount`] = -1 }
                 if (includeDelegateInfo) {
                   try { delegatesObj[`address${i + 1}delegate`] = response[i].delegates[0].username } catch (e) {}
+                  try { nameObj[`address${i + 1}name`] = response[i].delegate.username } catch (e) {}
                 }
               }
             }
-            chrome.storage.local.set(Object.assign({}, amountObj, delegatesObj))
+            chrome.storage.local.set(Object.assign({}, amountObj, twosigObj, delegatesObj, nameObj))
           }
         })
     }
@@ -176,12 +190,14 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
 /**
  * Request price info; optionally, also display a price notification
  * @param {boolean} [alertOnStartup=false] Whether or not to show a notification (only used at startup)
+ * @param {function} [callbackOnComplete=()=>{}] Callback function after the response was written to localStorage
  */
-function checkPrice (alertOnStartup = false) {
+function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
   const sourcePriceUrl = source + 'prices/'
   xhrCall(sourcePriceUrl,
     () => {
       console.warn(`Could not get price from:\n${sourcePriceUrl}`)
+      callbackOnComplete(false)
       notifyConnectionProblems(sourcePriceUrl)
     },
     (response) => {
@@ -189,6 +205,7 @@ function checkPrice (alertOnStartup = false) {
         const resp = response[0]
         if (typeof resp === 'object' && resp.id.toString().toUpperCase() === 'RISE') {
           chrome.storage.local.set({ riseusd: resp.price_usd, risebtc: resp.price_btc }, () => {
+            callbackOnComplete(resp)
             if (startup && alertOnStartup) {
               let message
               if (resp.percent_change_1h !== 'undefined' && resp.percent_change_24h !== 'undefined') {

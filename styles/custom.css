@@ -89,6 +89,9 @@ span.val {
   background-color: linen !important;
   border: none !important;
 }
+#bottombutton:hover {
+  background-image: linear-gradient(to bottom right, white, orange);
+}
 #stage {
   background-image: url('./../images/silver3.png');
 }

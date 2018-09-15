@@ -179,5 +179,8 @@
   },
   "more_addresses": {
     "message": "Mehr Adressen"
+  },
+  "address_not_found": {
+    "message": "Adresse nicht gefunden"
   }
 }

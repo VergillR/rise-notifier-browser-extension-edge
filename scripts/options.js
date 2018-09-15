@@ -56,11 +56,21 @@ function restoreAllOptions () {
     'address3',
     'address4',
     'address5',
+    'address1name',
+    'address2name',
+    'address3name',
+    'address4name',
+    'address5name',
     'address1amount',
     'address2amount',
     'address3amount',
     'address4amount',
     'address5amount',
+    'address1twosig',
+    'address2twosig',
+    'address3twosig',
+    'address4twosig',
+    'address5twosig',
     'address1delegate',
     'address2delegate',
     'address3delegate',
@@ -77,20 +87,30 @@ function restoreAllOptions () {
     currentaddresses[2] = item.address3
     currentaddresses[3] = item.address4
     currentaddresses[4] = item.address5
-    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
-    addresses.map((val, index) => {
+    currentaddresses.map((val, index) => {
       document.getElementById(`address${index + 1}`).value = val || ''
       if (val) {
-        document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
-        document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
-      }
-      if (item[`address${index + 1}amount`]) {
-        document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
-        document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui label`)
-      }
-      if (item[`address${index + 1}delegate`]) {
-        document.getElementById(`address${index + 1}delegate`).textContent = item[`address${index + 1}delegate`]
-        document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui label`)
+        if (item[`address${index + 1}amount`].toString() !== '-1') {
+          if (item[`address${index + 1}name`]) {
+            document.getElementById(`address${index + 1}name`).innerHTML = '<i class="icon teal user"></i>' + item[`address${index + 1}name`]
+            document.getElementById(`address${index + 1}name`).setAttribute('class', `ui horizontal label`)
+          }
+          document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
+          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
+          document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
+          document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
+          if (item[`address${index + 1}twosig`]) {
+            document.getElementById(`address${index + 1}twosig`).innerHTML = '<i class="icon yellow key"></i>2 ' + getText('m_signatures').toLowerCase()
+            document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
+          }
+          if (item[`address${index + 1}delegate`]) {
+            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`]
+            document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
+          }
+        } else {
+          document.getElementById(`address${index + 1}amount`).innerHTML = `<i class="icon red exclamation triangle"></i>${getText('address_not_found')}`
+          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
+        }
       }
     })
     const watchmessages = item.watchmessages.toString()
@@ -137,7 +157,9 @@ function saveAll () {
     for (let i = 0; i < addresses.length; i++) {
       if (addresses[i] !== currentaddresses[i]) {
         changeObj[`address${i + 1}`] = addresses[i]
-        changeObj[`address${i + 1}amount`] = 0
+        changeObj[`address${i + 1}name`] = ''
+        changeObj[`address${i + 1}amount`] = -1
+        changeObj[`address${i + 1}twosig`] = ''
         changeObj[`address${i + 1}delegate`] = ''
       }
     }
