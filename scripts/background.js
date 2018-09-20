@@ -153,7 +153,7 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
     let delegatesObj = {}
     let nameObj = {}
     if (addresses.length > 0) {
-      let url = `${source}accounts?delegate=${includeDelegateInfo ? 1 : 0}`
+      let url = `${source}rise_accounts?delegate=${includeDelegateInfo ? 1 : 0}`
       for (let z = 0; z < addresses.length; z++) {
         url += `&address${z + 1}=${addresses[z] || 1}`
       }
