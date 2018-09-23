@@ -755,6 +755,9 @@ class EdgeRuntimeBridge {
         }, "runtime.reload");
     }
     sendMessage(extensionId, message, options, responseCallback) {
+        if (arguments.length === 4) {
+            Array.prototype.splice.apply(arguments, [2, 1]);
+        }
         bridgeLog.DoActionAndLog(() => {
             myBrowser.runtime.sendMessage.apply(null, arguments);
         }, "runtime.sendMessage");

@@ -6,6 +6,46 @@ let startup = true
 let lastMatchIds = []
 const chrome = browser
 
+/**
+ * Load an outside script (holding the global variables and functions) into the current file
+ * @param {string} scriptName The script (with global functions) that needs to be imported
+ * @param {function} callback Function that is called after the script was imported
+ */
+function loadScript (scriptName, callback) {
+  const script = document.createElement('script')
+  script.src = chrome.extension.getURL(`./scripts/${scriptName}.js`)
+  script.addEventListener('load', callback, false)
+  document.head.appendChild(script)
+}
+
+loadScript('globals', () => {
+  chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+    try {
+      source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
+    } catch (e) {
+      source = sourceUrl
+    }
+    if (!source.endsWith('/')) source += '/'
+    chrome.browserAction.setBadgeText({ text: '' })
+    setTimeout(() => {
+      console.log('loadScript >> setTimeout has run')
+      checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
+      checkAccounts(true, true)
+      if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
+        getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
+      } else {
+        getLastBlockheightAtStartup(item.lastseenblockheight)
+      }
+    }, 15000)
+    setInterval(() => {
+      alarmListener()
+    }, 60000)
+    setTimeout(() => {
+      startup = null
+    }, 100000)
+  })
+})
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
     let initObject = {}
@@ -46,46 +86,6 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.useSource) initObject.useSource = '1'
 
     chrome.storage.local.set(initObject, () => { console.log('Initialization success') })
-  })
-})
-
-/**
- * Load an outside script (holding the global variables and functions) into the current file
- * @param {string} scriptName The script (with global functions) that needs to be imported
- * @param {function} callback Function that is called after the script was imported
- */
-function loadScript (scriptName, callback) {
-  const script = document.createElement('script')
-  script.src = chrome.extension.getURL(`./scripts/${scriptName}.js`)
-  script.addEventListener('load', callback, false)
-  document.head.appendChild(script)
-}
-
-loadScript('globals', () => {
-  chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
-    try {
-      source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
-    } catch (e) {
-      source = sourceUrl
-    }
-    if (!source.endsWith('/')) source += '/'
-    chrome.browserAction.setBadgeText({ text: '' })
-    setTimeout(() => {
-      console.log('loadScript >> setTimeout has run')
-      checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
-      checkAccounts(true, true)
-      if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
-        getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
-      } else {
-        getLastBlockheightAtStartup(item.lastseenblockheight)
-      }
-    }, 15000)
-    setInterval(() => {
-      alarmListener()
-    }, 60000)
-    setTimeout(() => {
-      startup = null
-    }, 100000)
   })
 })
 
