@@ -2,7 +2,7 @@
 /** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, August 2018 */
 // Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
 let source
-let startup = true
+let startup
 let lastMatchIds = []
 const chrome = browser
 
@@ -18,33 +18,43 @@ function loadScript (scriptName, callback) {
   document.head.appendChild(script)
 }
 
-loadScript('globals', () => {
-  chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
-    try {
-      source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
-    } catch (e) {
-      source = sourceUrl
-    }
-    if (!source.endsWith('/')) source += '/'
-    chrome.browserAction.setBadgeText({ text: '' })
-    setTimeout(() => {
-      console.log('loadScript >> setTimeout has run')
-      checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
-      checkAccounts(true, true)
-      if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
-        getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
-      } else {
-        getLastBlockheightAtStartup(item.lastseenblockheight)
+/**
+ * Initialize the extension; it imports the script with global functions and then starts the alarm
+ * @param {string} scriptName The script (with global functions that need to be imported)
+ */
+function initLoadScript (scriptName = 'globals') {
+  startup = true
+  loadScript('globals', () => {
+    startup = true
+    chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+      try {
+        source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
+      } catch (e) {
+        source = sourceUrl
       }
-    }, 15000)
-    setInterval(() => {
-      alarmListener()
-    }, 60000)
-    setTimeout(() => {
-      startup = null
-    }, 100000)
+      if (!source.endsWith('/')) source += '/'
+      chrome.browserAction.setBadgeText({ text: '' })
+      setTimeout(() => {
+        console.log('loadScript >> setTimeout has run')
+        checkPrice(item.alertPriceChangeOnStartup && item.alertPriceChangeOnStartup.toString() === '1')
+        checkAccounts(true, true)
+        if (item.checkOfflineMessages && item.checkOfflineMessages.toString() === '1' && item.lastseenblockheight > 1) {
+          getOfflineMessages(item.watchmessages, getLastBlockheightAtStartup)
+        } else {
+          getLastBlockheightAtStartup(item.lastseenblockheight)
+        }
+      }, 15000)
+      setInterval(() => {
+        alarmListener()
+      }, 60000)
+      setTimeout(() => {
+        startup = null
+      }, 100000)
+    })
   })
-})
+}
+
+initLoadScript('globals')
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
@@ -85,7 +95,7 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.source3) initObject.source3 = ''
     if (!item.useSource) initObject.useSource = '1'
 
-    chrome.storage.local.set(initObject, () => { console.log('Initialization success') })
+    chrome.storage.local.set(initObject, () => { console.log('Initialization success'); if (!startup) initLoadScript('globals') })
   })
 })
 
