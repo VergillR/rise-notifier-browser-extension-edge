@@ -27,9 +27,9 @@ function initLoadScript (scriptName = 'globals') {
   loadScript('globals', () => {
     startup = true
     chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
-      try {
+      if (item.useSource) {
         source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
-      } catch (e) {
+      } else {
         source = sourceUrl
       }
       if (!source.endsWith('/')) source += '/'
