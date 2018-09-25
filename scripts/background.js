@@ -26,13 +26,17 @@ function initLoadScript (scriptName = 'globals') {
   startup = true
   loadScript('globals', () => {
     startup = true
-    chrome.storage.local.get([ 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+    chrome.storage.local.get([ 'transactions', 'useSource', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
       if (item.useSource) {
         source = (item.useSource.toString() === '3') ? item.source3 : (item.useSource.toString() === '2' ? sourceUrl2 : sourceUrl)
       } else {
         source = sourceUrl
       }
       if (!source.endsWith('/')) source += '/'
+      let t = item.transactions
+      if (t && t.reverse().length > 0) {
+        lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
+      }
       chrome.browserAction.setBadgeText({ text: '' })
       setTimeout(() => {
         console.log('loadScript >> setTimeout has run')
@@ -286,8 +290,9 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
               results = [ ...results, ...posResults, ...negResults ]
               amount = amount + posAmount - negAmount
             }
+            results = results.filter((val, index) => lastMatchIds.indexOf(val.id) === -1)
             results.sort(compare)
-            lastMatchIds = results.map(c => c.id)
+            lastMatchIds = [ ...lastMatchIds, results.map(c => c.id) ]
             amount = longToNormalAmount(amount)
 
             const positiveAmount = amount > 0
@@ -379,19 +384,20 @@ function alarmListener () {
               if (negResults.length > 0) {
                 negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
-              results = [ ...posResults, ...negResults ].sort(compare)
+              results = [ ...posResults, ...negResults ]
               amount = longToNormalAmount(posAmount - negAmount)
             } else if (watchmessages === '2') {
-              results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1).sort(compare)
+              results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1)
               amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               amount = longToNormalAmount(amount)
             } else if (watchmessages === '3') {
-              results = resp.filter(c => addresses.indexOf(c.senderId) !== -1).sort(compare)
+              results = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
               amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
               amount = longToNormalAmount(amount)
             }
             // remove any result that has the same transaction id already seen in a previous response block
             results = results.filter((val, index) => lastMatchIds.indexOf(val.id) === -1)
+            results.sort(compare)
             const positiveAmount = amount > 0
             const length = results.length
             if (length > 0) {
