@@ -69,6 +69,12 @@ div.senderId {
   color: tomato;
   font-weight: bold;
 }
+.ui.segments.options_addresses, .ui.segments.options_watchmessages {
+  min-width: 100%;
+  width: max-content; 
+  width: -moz-max-content; 
+  width: -webkit-max-content;
+}
 .ui.segment.clickable {
   cursor: pointer;
 }
