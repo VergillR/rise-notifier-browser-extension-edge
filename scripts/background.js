@@ -47,13 +47,13 @@ function initLoadScript (scriptName = 'globals') {
         } else {
           getLastBlockheightAtStartup(item.lastseenblockheight)
         }
-      }, 15000)
+      }, 10000)
       setInterval(() => {
         alarmListener()
       }, 60000)
       setTimeout(() => {
         startup = null
-      }, 20000)
+      }, 15000)
     })
   })
 }
