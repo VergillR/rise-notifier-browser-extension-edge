@@ -53,7 +53,7 @@ function initLoadScript (scriptName = 'globals') {
       }, 60000)
       setTimeout(() => {
         startup = null
-      }, 100000)
+      }, 30000)
     })
   })
 }
@@ -355,6 +355,7 @@ function notifyConnectionProblems (url) {
  * After every time interval, send a request to the source to check recent transactions; if a transaction involved one of the RISE addresses stored in localStorage then display a notification
  */
 function alarmListener () {
+  if (!source || startup) return
   const url = source + 'rise_latest_transactions/'
   xhrCall(url,
     () => {
