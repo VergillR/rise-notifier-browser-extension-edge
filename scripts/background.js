@@ -53,7 +53,7 @@ function initLoadScript (scriptName = 'globals') {
       }, 60000)
       setTimeout(() => {
         startup = null
-      }, 30000)
+      }, 20000)
     })
   })
 }
