@@ -134,6 +134,7 @@ function xhrCall (url, errorCallback = () => {}, callback = () => {}) {
  * @param {number} [lastSeenBlockheight=1] The highest block height that was recorded by the program
  */
 function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
+  if (!source) return
   // the source page for last blockheight is source + 'rise_data/'
   const sourceLastBlockheight = source + 'rise_data/'
   xhrCall(sourceLastBlockheight,
@@ -157,6 +158,7 @@ function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
  * @param {boolean} [allowUnconfirmedBalance=true] Whether or not to request unconfirmed balance (if false, request confirmed balance)
  */
 function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = true) {
+  if (!source) return
   chrome.storage.local.get([ 'address1', 'address2', 'address3', 'address4', 'address5' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
     let amountObj = {}
@@ -204,6 +206,7 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
  * @param {function} [callbackOnComplete=()=>{}] Callback function after the response was written to localStorage
  */
 function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
+  if (!source) return
   const sourcePriceUrl = source + 'rise_prices/'
   xhrCall(sourcePriceUrl,
     () => {
@@ -254,6 +257,7 @@ function compare (a, b) {
  * @param {function} callbackOnComplete Callback function to be called after a response was received
  */
 function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
+  if (!source) return
   chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
     if (addresses.length > 0) {
