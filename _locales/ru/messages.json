@@ -182,5 +182,8 @@
   },
   "address_not_found": {
     "message": "адрес не найден"
+  },
+  "remove_data": {
+    "message": "удалить все данные"
   }
 }

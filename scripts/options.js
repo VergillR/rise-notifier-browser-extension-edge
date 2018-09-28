@@ -49,6 +49,8 @@ function restoreAllOptions () {
   document.getElementById('i_all').textContent = getText('watch_all')
   document.getElementById('i_incoming').textContent = getText('watch_incoming')
   document.getElementById('i_outgoing').textContent = getText('watch_outgoing')
+  document.getElementById('data').textContent = capitalize(getText('data'))
+  document.getElementById('eraser').innerHTML = `<i class="icon big blue trash"></i>${getText('remove_data')}`
 
   chrome.storage.local.get([
     'address1',
@@ -177,6 +179,65 @@ function saveAll () {
 }
 
 /**
+ * Toggles the state of the eraser button
+ * @param {Event} e Change event
+ */
+function changeEraseButtonStatus (e) {
+  if (e.target.checked) {
+    document.getElementById('eraser').setAttribute('class', 'ui black icon labeled small button')
+  } else {
+    document.getElementById('eraser').setAttribute('class', 'ui black icon labeled small disabled button')
+  }
+}
+
+/**
+ * Removes all data stored in localStorage by replacing it with default initial values
+ */
+function removeData () {
+  const clearObject = {}
+  clearObject.transactions = []
+  clearObject.messages = []
+  clearObject.watchmessages = '1'
+  clearObject.lastseenblockheight = 1
+  clearObject.checkOfflineMessages = '1'
+  clearObject.alertPriceChangeOnStartup = '2'
+  clearObject.address1amount = -1
+  clearObject.address2amount = -1
+  clearObject.address3amount = -1
+  clearObject.address4amount = -1
+  clearObject.address5amount = -1
+  clearObject.address1delegate = ''
+  clearObject.address2delegate = ''
+  clearObject.address3delegate = ''
+  clearObject.address4delegate = ''
+  clearObject.address5delegate = ''
+  clearObject.address1twosig = ''
+  clearObject.address2twosig = ''
+  clearObject.address3twosig = ''
+  clearObject.address4twosig = ''
+  clearObject.address5twosig = ''
+  clearObject.address1name = ''
+  clearObject.address2name = ''
+  clearObject.address3name = ''
+  clearObject.address4name = ''
+  clearObject.address5name = ''
+  clearObject.address1 = ''
+  clearObject.address2 = ''
+  clearObject.address3 = ''
+  clearObject.address4 = ''
+  clearObject.address5 = ''
+  clearObject.riseusd = 0
+  clearObject.risebtc = 0
+  clearObject.source3 = ''
+  clearObject.useSource = '1'
+
+  chrome.storage.local.set(clearObject, function () {
+    chrome.runtime.reload()
+    window.close()
+  })
+}
+
+/**
  * Closes the current window
  */
 function closeWindow () {
@@ -187,4 +248,6 @@ document.body.onload = restoreAllOptions
 document.getElementById('savemessages').addEventListener('click', saveAll)
 document.getElementById('saveaddresses').addEventListener('click', saveAll)
 document.getElementById('savesources').addEventListener('click', saveAll)
+document.getElementById('eraser').addEventListener('click', removeData)
+document.getElementById('erasedata').addEventListener('change', changeEraseButtonStatus)
 document.querySelectorAll('.canceloptions').forEach((elem) => elem.addEventListener('click', closeWindow))

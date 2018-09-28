@@ -182,5 +182,8 @@
   },
   "address_not_found": {
     "message": "Endereço não encontrado"
+  },
+  "remove_data": {
+    "message": "Remover todos os dados"
   }
 }

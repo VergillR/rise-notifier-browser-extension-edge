@@ -29,7 +29,9 @@ function start () {
     } else {
       document.getElementById('watchingmessages').textContent = getText('watch_all')
     }
-    // runs the function checkPrice from background.js to get the latest price info from data source
+    document.getElementById('riseusd').textContent = item.riseusd.toString()
+    document.getElementById('risebtc').textContent = item.risebtc.toString()
+    // runs the function checkPrice from background.js (if allowed) to get the latest price info from data source
     chrome.runtime.getBackgroundPage((background) => {
       background.checkPrice(false, (resp) => {
         document.getElementById('riseusd').textContent = item.riseusd.toString()

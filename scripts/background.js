@@ -4,6 +4,7 @@
 let source
 let startup
 let lastMatchIds = []
+let checkPricesCooldown = false
 const chrome = browser
 
 /**
@@ -33,7 +34,7 @@ function initLoadScript (scriptName = 'globals') {
       }
       if (!source.endsWith('/')) source += '/'
       let t = item.transactions
-      if (t && t.reverse().length > 0) {
+      if (t && Array.isArray(t) && t.reverse().length > 0) {
         lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
       }
       chrome.browserAction.setBadgeText({ text: '' })
@@ -45,7 +46,7 @@ function initLoadScript (scriptName = 'globals') {
         } else {
           getLastBlockheightAtStartup(item.lastseenblockheight)
         }
-      }, 10000)
+      }, 5000)
       setInterval(() => {
         alarmListener()
       }, 60000)
@@ -139,13 +140,10 @@ function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
   const sourceLastBlockheight = source + 'rise_data/'
   xhrCall(sourceLastBlockheight,
     () => {
-      // console.warn(`Could not get latest blockheight from:\n${sourceLastBlockheight}`)
       notifyConnectionProblems(sourceLastBlockheight)
     },
     (response) => {
-      if (typeof response !== 'object') {
-        // console.warn(`Could not get latest blockheight because response was not an object: ${response}`)
-      } else {
+      if (typeof response === 'object') {
         const lastBlockheight = parseInt(response['last-blockheight-checked'], 10) || 1
         chrome.storage.local.set({ lastseenblockheight: Math.max(lastBlockheight, lastSeenBlockheight) })
       }
@@ -172,7 +170,6 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
       }
       xhrCall(url,
         () => {
-          // console.warn(`Could not get account information from:\n${url}`)
           notifyConnectionProblems(url)
         },
         (response) => {
@@ -206,11 +203,15 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
  * @param {function} [callbackOnComplete=()=>{}] Callback function after the response was written to localStorage
  */
 function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
-  if (!source) return
+  if (!source || checkPricesCooldown) return
+  // prevent spamming this function when the popup screen is opened repeatedly
+  checkPricesCooldown = true
+  setTimeout(() => {
+    checkPricesCooldown = false
+  }, 480000)
   const sourcePriceUrl = source + 'rise_prices/'
   xhrCall(sourcePriceUrl,
     () => {
-      // console.warn(`Could not get price from:\n${sourcePriceUrl}`)
       callbackOnComplete(false)
       notifyConnectionProblems(sourcePriceUrl)
     },
@@ -268,7 +269,6 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
       }
       xhrCall(url,
         () => {
-          // console.warn(`Could not get offline messages from:\n${url}`)
           notifyConnectionProblems(url)
         },
         (response) => {
@@ -293,7 +293,7 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
             }
             results = results.filter((val, index) => lastMatchIds.indexOf(val.id) === -1)
             results.sort(compare)
-            lastMatchIds = [ ...lastMatchIds, results.map(c => c.id) ]
+            lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
             amount = longToNormalAmount(amount)
 
             const positiveAmount = amount > 0
@@ -360,7 +360,6 @@ function alarmListener () {
   const url = source + 'rise_latest_transactions/'
   xhrCall(url,
     () => {
-      // console.warn(`Could not get transactions from:\n${url}`)
       notifyConnectionProblems(url)
     },
     (response) => {
