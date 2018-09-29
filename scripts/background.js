@@ -60,7 +60,7 @@ function initLoadScript (scriptName = 'globals') {
 initLoadScript('globals')
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'address1delegateProd', 'address2delegateProd', 'address3delegateProd', 'address4delegate', 'address5delegateProd', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
     const initObject = {}
     if (!item.transactions) initObject.transactions = []
     if (!item.messages) initObject.messages = []
@@ -78,6 +78,11 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.address3delegate) initObject.address3delegate = ''
     if (!item.address4delegate) initObject.address4delegate = ''
     if (!item.address5delegate) initObject.address5delegate = ''
+    if (!item.address1delegateProd) initObject.address1delegateProd = ''
+    if (!item.address2delegateProd) initObject.address2delegateProd = ''
+    if (!item.address3delegateProd) initObject.address3delegateProd = ''
+    if (!item.address4delegateProd) initObject.address4delegateProd = ''
+    if (!item.address5delegateProd) initObject.address5delegateProd = ''
     if (!item.address1twosig) initObject.address1twosig = ''
     if (!item.address2twosig) initObject.address2twosig = ''
     if (!item.address3twosig) initObject.address3twosig = ''
@@ -162,6 +167,7 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
     let amountObj = {}
     let twosigObj = {}
     let delegatesObj = {}
+    let delegatesProdObj = {}
     let nameObj = {}
     if (addresses.length > 0) {
       let url = `${source}rise_accounts?delegate=${includeDelegateInfo ? 1 : 0}`
@@ -186,11 +192,12 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
                 } catch (e) { amountObj[`address${i + 1}amount`] = -1 }
                 if (includeDelegateInfo) {
                   try { delegatesObj[`address${i + 1}delegate`] = response[i].delegates[0].username } catch (e) {}
+                  try { delegatesProdObj[`address${i + 1}delegateProd`] = response[i].delegates[0].productivity } catch (e) {}
                   try { nameObj[`address${i + 1}name`] = response[i].delegate.username } catch (e) {}
                 }
               }
             }
-            chrome.storage.local.set(Object.assign({}, amountObj, twosigObj, delegatesObj, nameObj))
+            chrome.storage.local.set(Object.assign({}, amountObj, twosigObj, delegatesObj, delegatesProdObj, nameObj))
           }
         })
     }

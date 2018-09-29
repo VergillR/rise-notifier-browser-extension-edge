@@ -36,7 +36,10 @@ function restoreOptions () {
     'address3twosig',
     'address1delegate',
     'address2delegate',
-    'address3delegate'
+    'address3delegate',
+    'address1delegateProd',
+    'address2delegateProd',
+    'address3delegateProd'
   ], function (item) {
     currentaddresses[0] = item.address1
     currentaddresses[1] = item.address2
@@ -58,7 +61,8 @@ function restoreOptions () {
             document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
           }
           if (item[`address${index + 1}delegate`]) {
-            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`]
+            const prod = item[`address${index + 1}delegateProd`] ? ` (${item[`address${index + 1}delegateProd`]} %)` : ''
+            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`] + prod
             document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
           }
         } else {
@@ -108,6 +112,7 @@ function saveOptions () {
         changeObj[`address${i + 1}amount`] = -1
         changeObj[`address${i + 1}twosig`] = ''
         changeObj[`address${i + 1}delegate`] = ''
+        changeObj[`address${i + 1}delegateProd`] = ''
       }
     }
     chrome.storage.local.set(changeObj, function () {

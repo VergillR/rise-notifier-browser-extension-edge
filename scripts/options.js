@@ -78,7 +78,12 @@ function restoreAllOptions () {
     'address3delegate',
     'address4delegate',
     'address5delegate',
-    'watchmessages',
+    'address1delegateProd',
+    'address2delegateProd',
+    'address3delegateProd',
+    'address4delegateProd',
+    'address5delegateProd',
+    'watchmessagesProd',
     'useSource',
     'source3',
     'checkOfflineMessages',
@@ -106,7 +111,8 @@ function restoreAllOptions () {
             document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
           }
           if (item[`address${index + 1}delegate`]) {
-            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`]
+            const prod = item[`address${index + 1}delegateProd`] ? ` (${item[`address${index + 1}delegateProd`]} %)` : ''
+            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`] + prod
             document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
           }
         } else {
@@ -163,6 +169,7 @@ function saveAll () {
         changeObj[`address${i + 1}amount`] = -1
         changeObj[`address${i + 1}twosig`] = ''
         changeObj[`address${i + 1}delegate`] = ''
+        changeObj[`address${i + 1}delegateProd`] = ''
       }
     }
     changeObj.watchmessages = document.querySelector('input[name="watch"]:checked').value
@@ -211,6 +218,11 @@ function removeData () {
   clearObject.address3delegate = ''
   clearObject.address4delegate = ''
   clearObject.address5delegate = ''
+  clearObject.address1delegateProd = ''
+  clearObject.address2delegateProd = ''
+  clearObject.address3delegateProd = ''
+  clearObject.address4delegateProd = ''
+  clearObject.address5delegateProd = ''
   clearObject.address1twosig = ''
   clearObject.address2twosig = ''
   clearObject.address3twosig = ''
