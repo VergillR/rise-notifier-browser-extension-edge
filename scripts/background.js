@@ -181,7 +181,7 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
             for (let i = 0; i < response.length; i++) {
-              if (response[i] !== null) {
+              if (response[i] !== null && Object.keys(response[i]).length > 0) {
                 try {
                   if (allowUnconfirmedBalance) {
                     amountObj[`address${i + 1}amount`] = response[i].account.unconfirmedBalance
