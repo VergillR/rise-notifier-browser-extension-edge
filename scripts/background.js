@@ -159,8 +159,9 @@ function getLastBlockheightAtStartup (lastSeenBlockheight = 1) {
  * Request and process account info of all the RISE addresses stored in localStorage; optionally, request delegate info as well
  * @param {boolean} [includeDelegateInfo=false] Whether or not to also request delegate info
  * @param {boolean} [allowUnconfirmedBalance=true] Whether or not to request unconfirmed balance (if false, request confirmed balance)
+ * @param {boolean} [secondAttempt=false] Whether or not the first attempt failed and a second attempt is made (if second attempt also fails, an error notification is displayed)
  */
-function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = true) {
+function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = true, secondAttempt = false) {
   if (!source) return
   chrome.storage.local.get([ 'address1', 'address2', 'address3', 'address4', 'address5' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
@@ -180,6 +181,8 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
         },
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
+            // if all addresses were invalid, response array is [0]
+            if (response[0] === 0) return
             for (let i = 0; i < response.length; i++) {
               if (response[i] !== null && Object.keys(response[i]).length > 0) {
                 try {
@@ -198,6 +201,14 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
               }
             }
             chrome.storage.local.set(Object.assign({}, amountObj, twosigObj, delegatesObj, delegatesProdObj, nameObj))
+          } else if (!secondAttempt) {
+            // the response indicated a problem with the RISE node (not with the source server); retry
+            setTimeout(() => {
+              checkAccounts(includeDelegateInfo, allowUnconfirmedBalance, true)
+            }, 25000)
+          } else {
+            // the RISE node failed twice in a row; show an error notification
+            notifyConnectionProblems('RISE node')
           }
         })
     }
@@ -215,7 +226,7 @@ function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
   checkPricesCooldown = true
   setTimeout(() => {
     checkPricesCooldown = false
-  }, 480000)
+  }, 590000)
   const sourcePriceUrl = source + 'rise_prices/'
   xhrCall(sourcePriceUrl,
     () => {
@@ -263,8 +274,9 @@ function compare (a, b) {
  * Request transactions for the period (based on block height) that the extension was offline
  * @param {number} [type=1] Type of transactions to request: 1 = all, 2 = only incoming, 3 = only outgoing
  * @param {function} callbackOnComplete Callback function to be called after a response was received
+ * @param {boolean} [secondAttempt=false] Whether or not the first attempt failed and a second attempt is made (if second attempt also fails, an error notification is displayed)
  */
-function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
+function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAttempt = false) {
   if (!source) return
   chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
@@ -280,6 +292,11 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
         },
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
+            // if all addresses were invalid, response array is [0]
+            if (response[0] === 0) {
+              callbackOnComplete(item.lastseenblockheight)
+              return
+            }
             let results = []
             let amount = 0
             let highestblockheight = response[0].height || item.lastseenblockheight
@@ -331,8 +348,14 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}) {
             } else {
               callbackOnComplete(item.lastseenblockheight)
             }
+          } else if (!secondAttempt) {
+            // the response indicated a problem with the RISE node (not with the source server); retry
+            setTimeout(() => {
+              getOfflineMessages(type, callbackOnComplete, true)
+            }, 10000)
           } else {
-            callbackOnComplete(item.lastseenblockheight)
+            // the RISE node failed twice in a row; show an error notification
+            notifyConnectionProblems('RISE node')
           }
         })
     }
