@@ -425,7 +425,6 @@ function alarmListener () {
               amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
               amount = longToNormalAmount(amount)
             }
-            // remove any result that has the same transaction id already seen in a previous response block
             results = results.filter((val, index) => lastMatchIds.indexOf(val.id) === -1)
             results.sort(compare)
             const positiveAmount = amount > 0
