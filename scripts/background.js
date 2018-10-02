@@ -304,18 +304,17 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAt
               let posAmount = 0
               let negAmount = 0
               // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
-              const posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
+              let posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
               if (posResults.length > 0) {
                 posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
-              const negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1)
+              let negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
               if (negResults.length > 0) {
                 negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
               results = [ ...results, ...posResults, ...negResults ]
               amount = amount + posAmount - negAmount
             }
-            results = results.filter((val, index) => lastMatchIds.indexOf(val.id) === -1)
             results.sort(compare)
             lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
             amount = longToNormalAmount(amount)
@@ -407,22 +406,22 @@ function alarmListener () {
               let posAmount = 0
               let negAmount = 0
               // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
-              const posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1)
+              let posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
+              let negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
               if (posResults.length > 0) {
                 posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
-              const negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
               if (negResults.length > 0) {
                 negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               }
               results = [ ...posResults, ...negResults ]
               amount = longToNormalAmount(posAmount - negAmount)
             } else if (watchmessages === '2') {
-              results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1)
+              results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
               amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
               amount = longToNormalAmount(amount)
             } else if (watchmessages === '3') {
-              results = resp.filter(c => addresses.indexOf(c.senderId) !== -1)
+              results = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
               amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
               amount = longToNormalAmount(amount)
             }
