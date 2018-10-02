@@ -83,7 +83,7 @@ function restoreAllOptions () {
     'address3delegateProd',
     'address4delegateProd',
     'address5delegateProd',
-    'watchmessagesProd',
+    'watchmessages',
     'useSource',
     'source3',
     'checkOfflineMessages',
