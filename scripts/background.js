@@ -1,9 +1,13 @@
 /* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2, riseRegex */
-/** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, August 2018 */
+/** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, September 2018 */
 // Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
+// source is the url of the data source
 let source
+// startup is true when the extension has just started and will become false after 15 seconds
 let startup
+// lastMatchIds holds the transaction ids from previous notifications; this is used to prevent double notifications for the same transaction
 let lastMatchIds = []
+// checkPricesCooldown prevents (accidental) spamming the checkPrices function when the user opens the popup screen multiple times by imposing a 10 minute timeout
 let checkPricesCooldown = false
 const chrome = browser
 
@@ -34,6 +38,7 @@ function initLoadScript (scriptName = 'globals') {
       }
       if (!source.endsWith('/')) source += '/'
       let t = item.transactions
+      // fill the lastMatchIds with the last 2 transactionIds from the last 2 notifications stored (if any); this prevents double notifications when the user quickly restarts the extension multiple times
       if (t && Array.isArray(t) && t.reverse().length > 0) {
         lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
       }
