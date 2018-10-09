@@ -185,5 +185,8 @@
   },
   "remove_data": {
     "message": "Remover todos os dados"
+  },
+  "same_address": {
+    "message": "Mesmo endereço"
   }
 }

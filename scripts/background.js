@@ -1,6 +1,5 @@
 /* global browser, getText, longToNormalAmount, sourceUrl, sourceUrl2, riseRegex */
 /** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, September 2018 */
-// Web Extensions are not allowed to poll faster than ~60 seconds, so source should not have a polltime below 60 seconds, but preferably 90 seconds or more
 // source is the url of the data source
 let source
 // startup is true when the extension has just started and will become false after 15 seconds

@@ -1,10 +1,10 @@
 {
   "extName": {
     "message": "RISE сообщения",
-    "description": "получать сообщения для RISE транзакций."
+    "description": "Получать сообщения для RISE транзакций."
   },
   "extDesc": {
-    "message": "получать сообщения для RISE транзакций."
+    "message": "Получать сообщения для RISE транзакций."
   },
   "locale": {
     "message": "ru"
@@ -52,7 +52,7 @@
     "message": "Цены"
   },
   "watch_question": {
-    "message": "какие транзакции следует соблюдать?"
+    "message": "Какие транзакции следует соблюдать?"
   },
   "watch_all": {
     "message": "Все транзакции"
@@ -76,13 +76,13 @@
     "message": "скрыть детали"
   },
   "received": {
-    "message": "получено"
+    "message": "Получено"
   },
   "sent": {
-    "message": "послал"
+    "message": "Послал"
   },
   "m_lastmessages": {
-    "message": "последние сообщения"
+    "message": "Последние сообщения"
   },
   "m_rowId": {
     "message": "номер строки"
@@ -163,10 +163,10 @@
     "message": "транзакции"
   },
   "n_therewas": {
-    "message": "было"
+    "message": "Было"
   },
   "n_therewere": {
-    "message": "были"
+    "message": "Были"
   },
   "p_viewlastmessages": {
     "message": "смотреть последние сообщения"
@@ -178,12 +178,15 @@
     "message": "адреса"
   },
   "more_addresses": {
-    "message": "больше адресов"
+    "message": "Больше адресов"
   },
   "address_not_found": {
-    "message": "адрес не найден"
+    "message": "Адрес не найден"
   },
   "remove_data": {
     "message": "удалить все данные"
+  },
+  "same_address": {
+    "message": "Тот же адрес"
   }
 }

@@ -78,19 +78,49 @@ function restoreOptions () {
  * Check if the given address is a valid RISE address; also, show an error on the web page if the address was not valid
  * @param {string} address
  * @param {number} addressnr
+ * @param {string[]} allAddresses
  * @returns {boolean} validity
  */
-function validateAddress (address, addressnr) {
-  // address is either empty string or matches the riseRegex
-  if (address === '' || address.match(riseRegex)) {
+function validateAddress (address, addressnr, allAddresses) {
+  if (address === '') {
     document.getElementById(`address${addressnr + 1}note`).textContent = ''
     document.getElementById(`address${addressnr + 1}note`).setAttribute('hidden', 'hidden')
     return true
+  } else if (address.match(riseRegex)) {
+    if (!isDuplicate(address, addressnr, allAddresses)) {
+      document.getElementById(`address${addressnr + 1}note`).textContent = ''
+      document.getElementById(`address${addressnr + 1}note`).setAttribute('hidden', 'hidden')
+      return true
+    } else {
+      document.getElementById(`address${addressnr + 1}note`).textContent = getText('same_address')
+      document.getElementById(`address${addressnr + 1}note`).removeAttribute('hidden')
+      return false
+    }
   } else {
     document.getElementById(`address${addressnr + 1}note`).textContent = getText('validation_error')
     document.getElementById(`address${addressnr + 1}note`).removeAttribute('hidden')
     return false
   }
+}
+
+/**
+ * Checks if the address was already entered before
+ * @param {string} address
+ * @param {number} addressnr
+ * @param {string[]} allAddresses
+ * @returns {boolean} duplicate
+ */
+function isDuplicate (address, addressnr, allAddresses) {
+  if (addressnr > 0) {
+    let p = 0
+    while (p < addressnr) {
+      if (address === allAddresses[p]) {
+        return true
+      }
+      p++
+    }
+  }
+  return false
 }
 
 /**
@@ -102,7 +132,7 @@ function saveOptions () {
   const address3 = capitalizeInputValue('address3').trim()
   const addresses = [ address1, address2, address3 ]
 
-  const allAddressesValid = ([ address1, address2, address3 ].map((c, index) => validateAddress(c, index))).filter(c => !c).length === 0
+  const allAddressesValid = (addresses.map((c, index) => validateAddress(c, index, addresses))).filter(c => !c).length === 0
   if (allAddressesValid) {
     let changeObj = {}
     for (let i = 0; i < addresses.length; i++) {

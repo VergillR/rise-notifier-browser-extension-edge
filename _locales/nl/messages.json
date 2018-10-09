@@ -185,5 +185,8 @@
   },
   "remove_data": {
     "message": "Alle data verwijderen"
+  },
+  "same_address": {
+    "message": "Zelfde adres"
   }
 }
