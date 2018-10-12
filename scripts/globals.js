@@ -1,12 +1,16 @@
 /* global chrome, TweenMax */
 /* This file contains all global functions and values for the extension */
 const version = 'v.1.0.0'
+
+// rise.js is retrieved from https://unpkg.com/risejs@1.4.1/dist/browser/index.js
+const rise = window.rise
+
 // these urls are default values that cannot be changed by the user; the user can add an extra data source url and price url in the Options screen
-const sourceUrl = 'https://www.novaprisma.pro/'
-const sourceUrl2 = 'https://rise-data-api.herokuapp.com/'
+const sourceUrl = 'http://www.novaprisma.icu'
+
 const explorerUrl = 'https://explorer.rise.vision/address/'
-// for checking missed blocks: use source appended with the type matching the messages that are watched ('/fetchall', '/fetchin' or '/fetchout') and then '?' + the starting blockheight (e.g. '?blockheight=1225674') and '&' + for each valid, non-empty address (up to 5; e.g. '&address1=15200025131276213840R&address2=14414875305937957714R')
-// e.g. 'https://rise-latest-transactions.herokuapp.com/fetchall?blockheight=1225674&address1=15200025131276213840R&address2=14414875305937957714R'
+
+const sourcePrice = 'https://api.coinmarketcap.com/v1/ticker/RISE/'
 
 // regex used to validate RISE addresses which means: start with 15 to 30 digits and end with the capital letter 'R'
 const riseRegex = /^\d{15,30}R$/i
@@ -17,9 +21,10 @@ const riseRegex = /^\d{15,30}R$/i
  * @returns {string} Translated text
  */
 const getText = (name) => chrome.i18n.getMessage(name)
+
 /**
  * Capitalizes the first letter of a given string
- * @param {string} text 
+ * @param {string} text
  * @returns {string} Capitalized text
  */
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1)

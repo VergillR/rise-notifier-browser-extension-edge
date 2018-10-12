@@ -188,5 +188,11 @@
   },
   "same_address": {
     "message": "Zelfde adres"
+  },
+  "is_not_allowed": {
+    "message": "is niet toegestaan"
+  },
+  "source_has_no_url": {
+    "message": "Bron heeft geen URL"
   }
 }

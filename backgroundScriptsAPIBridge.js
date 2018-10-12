@@ -294,27 +294,27 @@ class EdgeChromeAlarmBridge {
     }
     create(name, alarmInfo) {
         bridgeLog.DoActionAndLog(() => {
-            bridgeHelper.alarms.create.apply(null, arguments);
+            bridgeHelper.alarms.create.apply(bridgeHelper.alarms, arguments);
         }, "alarms.create", undefined, "bridgeHelper.alarms.create");
     }
     getAll(callback) {
         bridgeLog.DoActionAndLog(() => {
-            bridgeHelper.alarms.getAll.apply(null, arguments);
+            bridgeHelper.alarms.getAll.apply(bridgeHelper.alarms, arguments);
         }, "alarms.getAll", undefined, "bridgeHelper.alarms.getAll");
     }
     clearAll(callback) {
         bridgeLog.DoActionAndLog(() => {
-            bridgeHelper.alarms.clearAll.apply(null, arguments);
+            bridgeHelper.alarms.clearAll.apply(bridgeHelper.alarms, arguments);
         }, "alarms.clearAll", undefined, "bridgeHelper.alarms.clearAll");
     }
     clear(name, callback) {
         bridgeLog.DoActionAndLog(() => {
-            bridgeHelper.alarms.clear.apply(null, arguments);
+            bridgeHelper.alarms.clear.apply(bridgeHelper.alarms, arguments);
         }, "alarms.clear", undefined, "bridgeHelper.alarms.clear");
     }
     get(name, callback) {
         bridgeLog.DoActionAndLog(() => {
-            bridgeHelper.alarms.get.apply(null, arguments);
+            bridgeHelper.alarms.get.apply(bridgeHelper.alarms, arguments);
         }, "alarms.get", undefined, "bridgeHelper.alarms.get");
     }
 }

@@ -188,5 +188,11 @@
   },
   "same_address": {
     "message": "Selbe Adresse"
+  },
+  "is_not_allowed": {
+    "message": "ist nicht erlaubt"
+  },
+  "source_has_no_url": {
+    "message": "Quelle hat keine URL"
   }
 }

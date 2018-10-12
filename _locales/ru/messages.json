@@ -188,5 +188,11 @@
   },
   "same_address": {
     "message": "Тот же адрес"
+  },
+  "is_not_allowed": {
+    "message": "не допускается"
+  },
+  "source_has_no_url": {
+    "message": "У источника нет URL-адреса"
   }
 }

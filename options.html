@@ -91,13 +91,14 @@
     </div><br />
     <div class="ui radio checkbox">
       <input name="datasource" type="radio" value="2" id="datasource2">
-      <label id="datasourcelabel2"></label><input type="url" readonly id="source2" size="60" />
+      <label id="datasourcelabel2"></label><input type="url" class="urlinput" id="source2" size="60" />
     </div><br />
     <div class="ui radio checkbox">
       <input name="datasource" type="radio" value="3" id="datasource3">
       <label id="datasourcelabel3"></label><input type="url" class="urlinput" id="source3" size="60" />
     </div><br />
   </div>
+  <div id="urlerrormessage" class="ui red warning message" hidden></div>
   <div class="ui segment bottom attached end">
     <div class="ui small buttons">
       <button class="ui left attached green button" id="savesources"></button>

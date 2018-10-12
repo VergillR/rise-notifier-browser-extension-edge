@@ -1,4 +1,4 @@
-/* global chrome, version, getText, sourceUrl2, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
+/* global chrome, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
 let currentaddresses = []
 
 /**
@@ -115,6 +115,7 @@ function restoreAllOptions () {
     'address5delegateProd',
     'watchmessages',
     'useSource',
+    'source2',
     'source3',
     'checkOfflineMessages',
     'alertPriceChangeOnStartup'
@@ -166,7 +167,7 @@ function restoreAllOptions () {
       document.getElementById('checkpricediff').checked = true
     }
     document.getElementById('source1').value = 'default' // or sourceUrl
-    document.getElementById('source2').value = sourceUrl2
+    document.getElementById('source2').value = item.source2
     document.getElementById('source3').value = item.source3
     if (item.useSource.toString() === '3') {
       document.getElementById('datasource3').checked = true
@@ -182,14 +183,28 @@ function restoreAllOptions () {
  * Validate the user input and if there were no errors, save all user input to localStorage and reload the app
  */
 function saveAll () {
+  const givenSources = [ String(document.getElementById('source2').value).trim(), String(document.getElementById('source3').value).trim() ]
+  const forbiddenRegex = /wallet\.rise\.vision/i
+  if (givenSources[0].match(forbiddenRegex) !== null || givenSources[1].match(forbiddenRegex) !== null) {
+    document.getElementById(`urlerrormessage`).innerHTML = `<i class="icon exclamation triangle"></i><b>wallet.rise.vision</b> ${getText('is_not_allowed')}`
+    document.getElementById(`urlerrormessage`).removeAttribute('hidden')
+    return
+  }
+  const selectedSource = parseInt(document.querySelector('input[name="datasource"]:checked').value, 10)
+  if (selectedSource > 1 && givenSources[selectedSource - 2] === '') {
+    document.getElementById(`urlerrormessage`).innerHTML = `<i class="icon exclamation triangle"></i>${getText('source_has_no_url')}`
+    document.getElementById(`urlerrormessage`).removeAttribute('hidden')
+    return
+  }
+
   const address1 = capitalizeInputValue('address1').trim()
   const address2 = capitalizeInputValue('address2').trim()
   const address3 = capitalizeInputValue('address3').trim()
   const address4 = capitalizeInputValue('address4').trim()
   const address5 = capitalizeInputValue('address5').trim()
   const addresses = [ address1, address2, address3, address4, address5 ]
-
   const allAddressesValid = (addresses.map((c, index) => validateAddress(c, index, addresses))).filter(c => !c).length === 0
+
   if (allAddressesValid) {
     let changeObj = {}
     for (let i = 0; i < addresses.length; i++) {
@@ -206,6 +221,7 @@ function saveAll () {
     changeObj.checkOfflineMessages = document.querySelector('input[name="checkstartup"]').checked ? '1' : '2'
     changeObj.alertPriceChangeOnStartup = document.querySelector('input[name="checkpricediff"]').checked ? '1' : '2'
     changeObj.useSource = document.querySelector('input[name="datasource"]:checked').value
+    changeObj.source2 = String(document.getElementById('source2').value).trim()
     changeObj.source3 = String(document.getElementById('source3').value).trim()
 
     chrome.storage.local.set(changeObj, function () {
@@ -270,6 +286,7 @@ function removeData () {
   clearObject.address5 = ''
   clearObject.riseusd = 0
   clearObject.risebtc = 0
+  clearObject.source2 = ''
   clearObject.source3 = ''
   clearObject.useSource = '1'
 
