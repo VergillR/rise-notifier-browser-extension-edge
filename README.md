@@ -46,7 +46,7 @@ To add an extra language:
 
 
 ### Data source
-The extension gets its information from a server that uses the RISE API to communicate with the RISE network. Click [here](https://github.com/VergillR/rise-data-api) to check the code or to set up your own data source that the extension can use. You can choose your data source in the extension's *Options* screen.
+The extension gets its information from a RISE node that is linked to the RISE network. Click [here](https://github.com/RiseVision/rise-node/wiki/How-To-Install-The-TypeScript-Core.-(-=1.0.0)) for more information and instructions to set up your own node. You can choose your data source in the extension's *Options* screen.
 
 
 ### Privacy
