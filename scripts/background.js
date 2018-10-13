@@ -16,6 +16,10 @@ let lastseenblockheight
 
 const chrome = browser
 
+/********************************************
+Functions below this line are functions that are only called on startup
+********************************************/
+
 /**
  * Load an outside script (holding the global variables and functions) into the current file
  * @param {string} scriptName The script (with global functions) that needs to be imported
@@ -69,12 +73,16 @@ function initLoadScript (scriptName = 'globals') {
           alarmListener()
         }, 60000)
         setTimeout(() => {
-          startup = false
           // if user selected an empty source (i.e. no url), nothing will ever update, so inform the user
-          // extension does not let user select an empty source when saving, so this is only possible if user manually changes localStorage
+          // also, user should not use wallet.rise.vision as source
+          // extension does not allow user to save such settings
           if (source === '') {
             notifyConnectionProblems(getText('source_has_no_url'))
+          } else if (source.match(/wallet\.rise\.vision/i) !== null) {
+            notifyConnectionProblems('wallet.rise.vision ' + getText('is_not_allowed'))
+            source = ''
           }
+          startup = false
         }, 15000)
       })
     }
@@ -142,6 +150,111 @@ chrome.runtime.onInstalled.addListener(() => {
 })
 
 /**
+ * Request the highest (most recent) block height from the source; then record the highest block height into localStorage
+ * @param {number} [lastSeenBlockheight=1] The highest block height that was recorded by the program
+ */
+function getLastBlockheightAtStartup () {
+  if (!source) return
+  rise.blocks.getHeight().then(({height}) => {
+    chrome.storage.local.set({ lastseenblockheight: height })
+  }).catch(() => { notifyConnectionProblems('RISE node') })
+}
+
+/**
+ * Request transactions for the period (based on block height) that the extension was offline
+ * @param {number} [type=1] Type of transactions to request: 1 = all, 2 = only incoming, 3 = only outgoing
+ * @param {function} callbackOnComplete Callback function to be called after a response was received
+ * @param {boolean} [secondAttempt=false] Whether or not the first attempt failed and a second attempt is made (if second attempt also fails, an error notification is displayed)
+ */
+function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAttempt = false) {
+  if (!source) return
+  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
+    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
+    if (addresses.length > 0) {
+      getOfflineMessagesList(type,
+        item.lastseenblockheight,
+        addresses,
+        (response) => {
+          if (Array.isArray(response) && response.length > 0) {
+            // if all addresses were invalid, response array is [0]
+            if (response[0] === 0) {
+              callbackOnComplete()
+              return
+            }
+            let results = []
+            let amount = 0
+            for (let i = 0; i < response.length; i++) {
+              let posAmount = 0
+              let negAmount = 0
+              // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
+              let posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
+              if (posResults.length > 0) {
+                posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+              }
+              let negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
+              if (negResults.length > 0) {
+                negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+              }
+              results = [ ...results, ...posResults, ...negResults ]
+              amount = amount + posAmount - negAmount
+            }
+            results.sort(compare)
+            lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
+            amount = longToNormalAmount(amount)
+
+            const positiveAmount = amount > 0
+            const length = results.length
+            if (length > 0) {
+              amount = Math.abs(amount)
+              const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
+              const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
+              // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
+              const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
+              const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
+              const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
+              positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
+              chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
+                // update the blockheight to the newest system data
+                callbackOnComplete()
+                // notify the user
+                chrome.browserAction.setBadgeText({ text: length.toString() })
+                const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
+                chrome.notifications.create({
+                  type: 'basic',
+                  iconUrl,
+                  title,
+                  message,
+                  priority: 0
+                })
+              })
+            } else {
+              callbackOnComplete()
+            }
+          } else if (!secondAttempt) {
+            // the response indicated a problem with the RISE node; retry once
+            setTimeout(() => {
+              getOfflineMessages(type, callbackOnComplete, true)
+            }, 10000)
+          } else {
+            // the RISE node failed twice in a row; show an error notification
+            notifyConnectionProblems('RISE node')
+          }
+        })
+    }
+  })
+}
+
+chrome.notifications.onClosed.addListener((notificationId, byUser) => {
+  if (byUser) {
+    chrome.browserAction.setBadgeText({text: ''})
+  }
+})
+
+/********************************************
+Functions below this line are functions that are used on various points or intervals
+********************************************/
+
+/**
  * Send a request for information to the target site
  * @param {string} url The url of the target site
  * @param {function} errorCallback Callback function to be called when an error has occurred
@@ -167,17 +280,6 @@ function ajax (url, errorCallback = () => {}, callback = () => {}) {
     }
     xhr.send()
   }
-}
-
-/**
- * Request the highest (most recent) block height from the source; then record the highest block height into localStorage
- * @param {number} [lastSeenBlockheight=1] The highest block height that was recorded by the program
- */
-function getLastBlockheightAtStartup () {
-  if (!source) return
-  rise.blocks.getHeight().then(({height}) => {
-    chrome.storage.local.set({ lastseenblockheight: height })
-  }).catch(() => { notifyConnectionProblems('RISE node') })
 }
 
 /**
@@ -291,90 +393,6 @@ function compare (a, b) {
 }
 
 /**
- * Request transactions for the period (based on block height) that the extension was offline
- * @param {number} [type=1] Type of transactions to request: 1 = all, 2 = only incoming, 3 = only outgoing
- * @param {function} callbackOnComplete Callback function to be called after a response was received
- * @param {boolean} [secondAttempt=false] Whether or not the first attempt failed and a second attempt is made (if second attempt also fails, an error notification is displayed)
- */
-function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAttempt = false) {
-  if (!source) return
-  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
-    const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
-    if (addresses.length > 0) {
-      getOfflineMessagesList(type,
-        item.lastseenblockheight,
-        addresses,
-        (response) => {
-          if (Array.isArray(response) && response.length > 0) {
-            // if all addresses were invalid, response array is [0]
-            if (response[0] === 0) {
-              callbackOnComplete()
-              return
-            }
-            let results = []
-            let amount = 0
-            for (let i = 0; i < response.length; i++) {
-              let posAmount = 0
-              let negAmount = 0
-              // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
-              let posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
-              if (posResults.length > 0) {
-                posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-              }
-              let negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
-              if (negResults.length > 0) {
-                negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-              }
-              results = [ ...results, ...posResults, ...negResults ]
-              amount = amount + posAmount - negAmount
-            }
-            results.sort(compare)
-            lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
-            amount = longToNormalAmount(amount)
-
-            const positiveAmount = amount > 0
-            const length = results.length
-            if (length > 0) {
-              amount = Math.abs(amount)
-              const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
-              const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
-              // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
-              const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
-              const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
-              const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
-              positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
-              chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
-                // update the blockheight to the newest system data
-                callbackOnComplete()
-                // notify the user
-                chrome.browserAction.setBadgeText({ text: length.toString() })
-                const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
-                chrome.notifications.create({
-                  type: 'basic',
-                  iconUrl,
-                  title,
-                  message,
-                  priority: 0
-                })
-              })
-            } else {
-              callbackOnComplete()
-            }
-          } else if (!secondAttempt) {
-            // the response indicated a problem with the RISE node; retry once
-            setTimeout(() => {
-              getOfflineMessages(type, callbackOnComplete, true)
-            }, 10000)
-          } else {
-            // the RISE node failed twice in a row; show an error notification
-            notifyConnectionProblems('RISE node')
-          }
-        })
-    }
-  })
-}
-
-/**
  * Display a notification in case an error occurred, e.g. when the server did not respond or the url does not exist
  * @param {string} message Message text
  */
@@ -473,12 +491,6 @@ function alarmListener () {
     }
   })
 }
-
-chrome.notifications.onClosed.addListener((notificationId, byUser) => {
-  if (byUser) {
-    chrome.browserAction.setBadgeText({text: ''})
-  }
-})
 
 /********************************************
 Functions below this line are functions that retrieve information by utilizing the RISE API
