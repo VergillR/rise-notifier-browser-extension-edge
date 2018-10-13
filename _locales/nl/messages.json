@@ -194,5 +194,11 @@
   },
   "source_has_no_url": {
     "message": "Bron heeft geen URL"
+  },
+  "other": {
+    "message": "Overig"
+  },
+  "separate_notifications": {
+    "message": "Notificaties voor inkomende en uitgaande transacties afzonderlijk tonen"
   }
 }

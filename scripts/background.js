@@ -42,7 +42,7 @@ function initLoadScript (scriptName = 'globals') {
       initLoadScript('globals')
     } else if (scriptName === 'globals') {
       startup = true
-      chrome.storage.local.get([ 'transactions', 'useSource', 'source2', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight' ], (item) => {
+      chrome.storage.local.get([ 'transactions', 'useSource', 'source2', 'source3', 'alertPriceChangeOnStartup', 'checkOfflineMessages', 'watchmessages', 'lastseenblockheight', 'allowmixedmessage' ], (item) => {
         lastseenblockheight = parseInt(item.lastseenblockheight, 10) || 1
 
         if (item.useSource) {
@@ -54,9 +54,22 @@ function initLoadScript (scriptName = 'globals') {
         rise.nodeAddress = source
 
         let t = item.transactions
+        // default behavior: allow mixed message (or when watchmessages is set to 2 or 3)
         // fill the lastMatchIds with the last 2 transactionIds from the last 2 notifications stored (if any); this prevents double notifications when the user quickly restarts the extension multiple times
-        if (t && Array.isArray(t) && t.reverse().length > 0) {
-          lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
+        if (item.allowmixedmessage === 'y' || item.watchmessages.toString() !== '1') {
+          if (t && Array.isArray(t) && t.reverse().length > 0) {
+            lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
+          }
+        } else {
+          // this means that user wants seperated messages AND both received and sent
+          // fill the lastMatchIds with the last 4 transactionIds from the last 4 notification stored (if any); this prevents double notifications when the user quickly restarts the extension multiple times
+          if (t && Array.isArray(t) && t.reverse().length > 0) {
+            const t1 = t[0] || []
+            const t2 = t[1] || []
+            const t3 = t[2] || []
+            const t4 = t[3] || []
+            lastMatchIds = [ ...t1, ...t2, ...t3, ...t4 ].map((element, index) => element.id)
+          }
         }
 
         chrome.browserAction.setBadgeText({ text: '' })
@@ -92,7 +105,7 @@ function initLoadScript (scriptName = 'globals') {
 initLoadScript('rise')
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'address1delegateProd', 'address2delegateProd', 'address3delegateProd', 'address4delegate', 'address5delegateProd', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source2', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'address1delegateProd', 'address2delegateProd', 'address3delegateProd', 'address4delegate', 'address5delegateProd', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source2', 'source3', 'useSource', 'checkOfflineMessages', 'alertPriceChangeOnStartup', 'allowmixedmessage'], (item) => {
     const initObject = {}
     if (!item.transactions) initObject.transactions = []
     if (!item.messages) initObject.messages = []
@@ -138,6 +151,7 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.source2) initObject.source2 = ''
     if (!item.source3) initObject.source3 = ''
     if (!item.useSource) initObject.useSource = '1'
+    if (!item.allowmixedmessage) initObject.allowmixedmessage = 'y'
 
     chrome.storage.local.set(initObject, () => {
       setTimeout(() => {
@@ -168,7 +182,7 @@ function getLastBlockheightAtStartup () {
  */
 function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAttempt = false) {
   if (!source) return
-  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions' ], (item) => {
+  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions', 'allowmixedmessage' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
     if (addresses.length > 0) {
       getOfflineMessagesList(type,
@@ -182,54 +196,48 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAt
               return
             }
             let results = []
+            let onlyPosResults = []
+            let onlyNegResults = []
             let amount = 0
+            let onlyPosAmount = 0
+            let onlyNegAmount = 0
             for (let i = 0; i < response.length; i++) {
               let posAmount = 0
               let negAmount = 0
               // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
               let posResults = response[i].filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
               if (posResults.length > 0) {
+                onlyPosResults = onlyPosResults.concat(posResults)
                 posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+                onlyPosAmount += posAmount
               }
               let negResults = response[i].filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
               if (negResults.length > 0) {
+                onlyNegResults = onlyNegResults.concat(negResults)
                 negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
+                onlyNegAmount += negAmount
               }
-              results = [ ...results, ...posResults, ...negResults ]
+              results = results.concat(posResults).concat(negResults)
               amount = amount + posAmount - negAmount
             }
-            results.sort(compare)
-            lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
-            amount = longToNormalAmount(amount)
-
-            const positiveAmount = amount > 0
-            const length = results.length
-            if (length > 0) {
-              amount = Math.abs(amount)
-              const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
-              const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
-              // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
-              const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
-              const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
-              const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
-              positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
-              chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
-                // update the blockheight to the newest system data
-                callbackOnComplete()
-                // notify the user
-                chrome.browserAction.setBadgeText({ text: length.toString() })
-                const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
-                chrome.notifications.create({
-                  type: 'basic',
-                  iconUrl,
-                  title,
-                  message,
-                  priority: 0
-                })
-              })
-            } else {
-              callbackOnComplete()
+            if (results.length > 0) {
+              lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
+              if (item.watchmessages.toString() !== '1' || item.allowmixedmessage === 'y') {
+                createNotification(amount > 0, results, Math.abs(amount), item)
+              } else {
+                if (onlyPosResults.length > 0) {
+                  if (onlyNegResults.length > 0) {
+                    createNotification(true, onlyPosResults, onlyPosAmount, item, false, onlyNegResults, onlyNegAmount)
+                  } else {
+                    createNotification(true, onlyPosResults, onlyPosAmount, item)
+                  }
+                } else if (onlyNegResults.length > 0) {
+                  createNotification(false, onlyNegResults, onlyNegAmount, item)
+                }
+              }
             }
+            // update the blockheight to the newest system data
+            callbackOnComplete()
           } else if (!secondAttempt) {
             // the response indicated a problem with the RISE node; retry once
             setTimeout(() => {
@@ -424,63 +432,57 @@ function alarmListener () {
     if (typeof response === 'object') {
       // there was at least 1 transaction so check if it matches any given RISE addresses
       if (response.transactions && response.transactions.length > 0) {
-        chrome.storage.local.get(['address1', 'address2', 'address3', 'address4', 'address5', 'watchmessages', 'transactions', 'messages'], (item) => {
+        chrome.storage.local.get(['address1', 'address2', 'address3', 'address4', 'address5', 'watchmessages', 'transactions', 'messages', 'allowmixedmessage'], (item) => {
           const resp = response.transactions
           const watchmessages = item.watchmessages.toString()
 
           let results = []
+          let posResults = []
+          let negResults = []
+          let posAmount = 0
+          let negAmount = 0
           const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
           let amount = 0
           if (watchmessages === '1') {
-            let posAmount = 0
-            let negAmount = 0
             // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
-            let posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
-            let negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
+            posResults = resp.filter(c => addresses.indexOf(c.recipientId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
+            negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
             if (posResults.length > 0) {
               posAmount = posResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
             }
             if (negResults.length > 0) {
               negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
             }
-            results = [ ...posResults, ...negResults ]
-            amount = longToNormalAmount(posAmount - negAmount)
+            results = posResults.concat(negResults)
           } else if (watchmessages === '2') {
             results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
             amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
-            amount = longToNormalAmount(amount)
           } else if (watchmessages === '3') {
             results = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
             amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
-            amount = longToNormalAmount(amount)
           }
-          results.sort(compare)
-          const positiveAmount = amount > 0
-          const length = results.length
-          if (length > 0) {
-            lastMatchIds = results.map(c => c.id)
-            amount = Math.abs(amount)
-            const title = positiveAmount ? `${getText('received')}: ${amount} RISE` : `${getText('sent')}: ${amount} RISE`
-            const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
-            // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
-            const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
-            const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
-            const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([results]) : item.transactions.concat([results]).slice(1)
-            positiveAmount ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
-            chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
+          lastMatchIds = results.map(c => c.id)
+
+          if (watchmessages !== '1' || item.allowmixedmessage === 'y') {
+            // received and sent transactions may be combined into 1 notification (or watchmessages was set to 2 or 3)
+            if (results.length > 0) {
+              createNotification(amount > 0, results, Math.abs(posAmount - negAmount), item)
               // get new account balances (including unconfirmed balances)
               checkAccounts(false, true)
-              // notify the user
-              chrome.browserAction.setBadgeText({ text: length.toString() })
-              const iconUrl = positiveAmount ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
-              chrome.notifications.create({
-                type: 'basic',
-                iconUrl,
-                title,
-                message,
-                priority: 0
-              })
-            })
+            }
+          } else {
+            // received and sent transactions should be seperated into multiple notifications
+            if (posResults.length > 0) {
+              if (negResults.length > 0) {
+                createNotification(true, posResults, posAmount, item, false, negResults, negAmount)
+              } else {
+                createNotification(true, posResults, posAmount, item)
+              }
+              checkAccounts(false, true)
+            } else if (negResults.length > 0) {
+              createNotification(false, negResults, negAmount, item)
+              checkAccounts(false, true)
+            }
           }
         })
       } else {
@@ -488,6 +490,51 @@ function alarmListener () {
       }
     } else {
       // the response was not an object or transactions is undefined
+    }
+  })
+}
+
+/**
+ * Creates notification and stores the message; if 2 notifications need to be created, there is a local storage conflict in which the 2nd message must wait after the 1st one is written to disk; for such cases, add the arguments for the 2nd message and the 2nd will be created after the 1st
+ * @param {boolean} isPositive Whether the amount is positive (received) or not (sent)
+ * @param {object[]} rr Array holding transactions that involved user's addresses
+ * @param {number} aa Amount (long integer)
+ * @param {Object} itemObj Item object that was retrieved from localStorage and contains the properties messages and transactions
+ * @param {function} callback Call an optional function after the new message is written to localStorage
+ * @param {boolean} isPositive2 Whether the amount is positive (received) or not (sent)
+ * @param {object[]} rr2 Array holding transactions that involved user's addresses
+ * @param {number} aa2 Amount (long integer)
+ */
+function createNotification (isPositive, rr, aa, itemObj, isPositive2 = undefined, rr2 = undefined, aa2 = undefined) {
+  const isPos = isPositive
+  let r = rr
+  let item = itemObj
+  const length = r.sort(compare).length
+  const a = longToNormalAmount(aa)
+
+  const title = isPos ? `${getText('received')}: ${a} RISE` : `${getText('sent')}: ${a} RISE`
+  const message = length > 1 ? `${getText('n_therewere')} ${length.toString()} ${getText('n_transactions')}.` : `${getText('n_therewas')} 1 ${getText('n_transaction')}.`
+  // store to latest results object; if transactions object has 10 entries, then also discard the oldest entry
+  const logmessage = `${title} (${length.toString()} ${length === 1 ? getText('n_transaction') : getText('n_transactions')})`
+  const allmessages = item.messages.length + 1 < 11 ? item.messages.concat([logmessage]) : item.messages.concat([logmessage]).slice(1)
+  item.messages = allmessages
+  const transfers = item.transactions.length + 1 < 11 ? item.transactions.concat([r]) : item.transactions.concat([r]).slice(1)
+  item.transactions = transfers
+  isPos ? chrome.browserAction.setBadgeBackgroundColor({color: '#22AB23'}) : chrome.browserAction.setBadgeBackgroundColor({color: '#D94523'})
+  chrome.storage.local.set({ transactions: transfers, messages: allmessages }, () => {
+    // notify the user
+    chrome.browserAction.setBadgeText({ text: length.toString() })
+    const iconUrl = isPos ? 'images/rise_notification_posAmount.png' : 'images/rise_notification_negAmount.png'
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl,
+      title,
+      message,
+      priority: 0
+    })
+    if (isPositive2 !== undefined && rr2 !== undefined && aa2 !== undefined) {
+      // if a second notification needs to be created after the first one
+      createNotification(isPositive2, rr2, aa2, itemObj)
     }
   })
 }

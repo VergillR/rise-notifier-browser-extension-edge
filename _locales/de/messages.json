@@ -194,5 +194,11 @@
   },
   "source_has_no_url": {
     "message": "Quelle hat keine URL"
+  },
+  "other": {
+    "message": "Divers"
+  },
+  "separate_notifications": {
+    "message": "Benachrichtigungen für eingehende und ausgehende Transaktionen getrennt zeigen"
   }
 }

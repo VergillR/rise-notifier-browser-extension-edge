@@ -64,10 +64,13 @@ function restoreAllOptions () {
   document.getElementById('saveaddresses').textContent = getText('button_save')
   document.getElementById('savemessages').textContent = getText('button_save')
   document.getElementById('savesources').textContent = getText('button_save')
+  document.getElementById('saveother').textContent = getText('button_save')
   document.getElementById('sources').textContent = getText('sources')
   document.getElementById('atstartup').textContent = `${getText('startup')}:`
+  document.getElementById('other').textContent = getText('other')
   document.getElementById('labelcheckstartup').textContent = getText('checkstartup')
   document.getElementById('labelcheckpricediff').textContent = getText('show_pricechange')
+  document.getElementById('labelseparatemessage').textContent = getText('separate_notifications')
   document.getElementById('datasourcelabel1').textContent = `${getText('source')} 1 (${getText('data')}):`
   document.getElementById('datasourcelabel2').textContent = `${getText('source')} 2 (${getText('data')}):`
   document.getElementById('datasourcelabel3').textContent = `${getText('source')} 3 (${getText('data')}):`
@@ -118,7 +121,8 @@ function restoreAllOptions () {
     'source2',
     'source3',
     'checkOfflineMessages',
-    'alertPriceChangeOnStartup'
+    'alertPriceChangeOnStartup',
+    'allowmixedmessage'
   ], function (item) {
     currentaddresses[0] = item.address1
     currentaddresses[1] = item.address2
@@ -165,6 +169,9 @@ function restoreAllOptions () {
     }
     if (item.alertPriceChangeOnStartup.toString() === '1') {
       document.getElementById('checkpricediff').checked = true
+    }
+    if (item.allowmixedmessage !== 'y') {
+      document.getElementById('separatemessage').checked = true
     }
     document.getElementById('source1').value = 'default' // or sourceUrl
     document.getElementById('source2').value = item.source2
@@ -220,6 +227,7 @@ function saveAll () {
     changeObj.watchmessages = document.querySelector('input[name="watch"]:checked').value
     changeObj.checkOfflineMessages = document.querySelector('input[name="checkstartup"]').checked ? '1' : '2'
     changeObj.alertPriceChangeOnStartup = document.querySelector('input[name="checkpricediff"]').checked ? '1' : '2'
+    changeObj.allowmixedmessage = document.querySelector('input[name="separatemessage"]').checked ? 'n' : 'y'
     changeObj.useSource = document.querySelector('input[name="datasource"]:checked').value
     changeObj.source2 = String(document.getElementById('source2').value).trim()
     changeObj.source3 = String(document.getElementById('source3').value).trim()
@@ -289,6 +297,7 @@ function removeData () {
   clearObject.source2 = ''
   clearObject.source3 = ''
   clearObject.useSource = '1'
+  clearObject.allowmixedmessage = 'y'
 
   chrome.storage.local.set(clearObject, function () {
     chrome.runtime.reload()
@@ -307,6 +316,7 @@ document.body.onload = restoreAllOptions
 document.getElementById('savemessages').addEventListener('click', saveAll)
 document.getElementById('saveaddresses').addEventListener('click', saveAll)
 document.getElementById('savesources').addEventListener('click', saveAll)
+document.getElementById('saveother').addEventListener('click', saveAll)
 document.getElementById('eraser').addEventListener('click', removeData)
 document.getElementById('erasedata').addEventListener('change', changeEraseButtonStatus)
 document.querySelectorAll('.canceloptions').forEach((elem) => elem.addEventListener('click', closeWindow))
