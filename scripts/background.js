@@ -534,7 +534,7 @@ function createNotification (isPositive, rr, aa, itemObj, isPositive2 = undefine
     })
     if (isPositive2 !== undefined && rr2 !== undefined && aa2 !== undefined) {
       // if a second notification needs to be created after the first one
-      createNotification(isPositive2, rr2, aa2, itemObj)
+      createNotification(isPositive2, rr2, aa2, item)
     }
   })
 }
