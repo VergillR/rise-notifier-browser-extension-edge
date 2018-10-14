@@ -454,6 +454,7 @@ function alarmListener () {
               negAmount = negResults.reduce((acc, value) => { acc += value.amount; return acc }, 0)
             }
             results = posResults.concat(negResults)
+            amount = posAmount - negAmount
           } else if (watchmessages === '2') {
             results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
             amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
