@@ -467,7 +467,7 @@ function alarmListener () {
           if (watchmessages !== '1' || item.allowmixedmessage === 'y') {
             // received and sent transactions may be combined into 1 notification (or watchmessages was set to 2 or 3)
             if (results.length > 0) {
-              createNotification(amount > 0, results, Math.abs(posAmount - negAmount), item)
+              createNotification(amount > 0, results, Math.abs(amount), item)
               // get new account balances (including unconfirmed balances)
               checkAccounts(false, true)
             }
