@@ -369,7 +369,7 @@ function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
   ajax(sourcePriceUrl,
     () => {
       callbackOnComplete(false)
-      notifyConnectionProblems(sourcePriceUrl)
+      notifyConnectionProblems(`${getText('source')} (${getText('prices')}): ${sourcePriceUrl}`)
     },
     (response) => {
       if (Array.isArray(response)) {
