@@ -174,7 +174,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 /**
  * Request the highest (most recent) block height from the source; then record the highest block height into localStorage
- * @param {number} [lastSeenBlockheight=1] The highest block height that was recorded by the program
  */
 function getLastBlockheightAtStartup () {
   if (!source) return
