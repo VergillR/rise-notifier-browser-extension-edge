@@ -191,7 +191,7 @@ function getLastBlockheightAtStartup () {
  */
 function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAttempt = false) {
   if (!source) return
-  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions', 'allowmixedmessage' ], (item) => {
+  chrome.storage.local.get([ 'lastseenblockheight', 'address1', 'address2', 'address3', 'address4', 'address5', 'messages', 'transactions', 'watchmessages', 'allowmixedmessage' ], (item) => {
     const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter((e) => e && e.match(riseRegex))
     if (addresses.length > 0) {
       getOfflineMessagesList(type,

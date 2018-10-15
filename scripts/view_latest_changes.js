@@ -117,6 +117,8 @@ function start () {
           title.setAttribute('class', 'title ui block header')
           title.textContent = titlemessages[i]
           document.getElementById(name).appendChild(title)
+          const pp = title.parentNode.parentNode
+          pp.removeAttribute('hidden')
           for (let j = 0; j < data[i].length; j++) {
             let temp = data[i][j]
             const base = ' base'
@@ -206,6 +208,7 @@ function start () {
             document.getElementById(name).appendChild(hr)
           }
         }
+        document.getElementById('loadericon').setAttribute('class', 'disabled loader')
       }
     }
   })
