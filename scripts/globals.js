@@ -6,11 +6,11 @@ const version = 'v.1.0.0'
 const rise = window.rise
 
 // these urls are default values that cannot be changed by the user; the user can add an extra data source url and price url in the Options screen
-const sourceUrl = 'http://www.novaprisma.icu'
+const sourceUrl = 'https://www.novaprisma.icu'
 
 const explorerUrl = 'https://explorer.rise.vision/address/'
 
-const sourcePrice = 'https://api.coinmarketcap.com/v1/ticker/RISE/'
+const sourcePriceUrl = 'https://api.coinmarketcap.com/v1/ticker/RISE/'
 
 // regex used to validate RISE addresses which means: start with 15 to 30 digits and end with the capital letter 'R'
 const riseRegex = /^\d{15,30}R$/i

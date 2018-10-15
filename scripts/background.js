@@ -1,14 +1,14 @@
 /* eslint-disable standard/no-callback-literal */
-/* global browser, rise, getText, longToNormalAmount, sourceUrl, sourcePrice, riseRegex */
+/* global browser, rise, getText, longToNormalAmount, sourceUrl, sourcePriceUrl, riseRegex */
 /** RISE Notifications Web Extension v.1.0 created for RISE by Vergill Lemmert, September 2018 */
 
 // source is the url of the data source
 let source
-/*  sourcePriceUrl is the url of the price source
+/*  sourcePrice is the url of the price source
     price source should respond with an array containing a single object with the following type:
     [ { 'price_usd': string, 'price_btc': string, 'percent_change_1h'?: string, 'percent_change_24h'?: string } ]
 */
-let sourcePriceUrl
+let sourcePrice
 // startup is true when the extension has just started and will become false after 15 seconds
 let startup
 // lastMatchIds holds the transaction ids from previous notifications; this is used to prevent double notifications for the same transaction
@@ -58,7 +58,7 @@ function initLoadScript (scriptName = 'globals') {
 
         rise.nodeAddress = source
 
-        sourcePriceUrl = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePrice
+        sourcePrice = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePriceUrl
 
         let t = item.transactions
         // default behavior: allow mixed message (or when watchmessages is set to 2 or 3)
@@ -360,16 +360,16 @@ function checkAccounts (includeDelegateInfo = false, allowUnconfirmedBalance = t
  * @param {function} [callbackOnComplete=()=>{}] Callback function after the response was written to localStorage
  */
 function checkPrice (alertOnStartup = false, callbackOnComplete = () => {}) {
-  if (!source || !sourcePriceUrl || checkPricesCooldown) return
+  if (!source || !sourcePrice || checkPricesCooldown) return
   // prevent spamming this function when the popup screen is opened repeatedly
   checkPricesCooldown = true
   setTimeout(() => {
     checkPricesCooldown = false
   }, 590000)
-  ajax(sourcePriceUrl,
+  ajax(sourcePrice,
     () => {
       callbackOnComplete(false)
-      notifyConnectionProblems(`${getText('source')} (${getText('prices')}): ${sourcePriceUrl}`)
+      notifyConnectionProblems(`${getText('source')} (${getText('prices')}): ${sourcePrice}`)
     },
     (response) => {
       if (Array.isArray(response)) {
