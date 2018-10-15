@@ -71,9 +71,11 @@ function restoreAllOptions () {
   document.getElementById('labelcheckstartup').textContent = getText('checkstartup')
   document.getElementById('labelcheckpricediff').textContent = getText('show_pricechange')
   document.getElementById('labelseparatemessage').textContent = getText('separate_notifications')
-  document.getElementById('datasourcelabel1').textContent = `${getText('source')} 1 (${getText('data')}):`
-  document.getElementById('datasourcelabel2').textContent = `${getText('source')} 2 (${getText('data')}):`
-  document.getElementById('datasourcelabel3').textContent = `${getText('source')} 3 (${getText('data')}):`
+  document.getElementById('datasourcelabel1').textContent = `${getText('source')} 1 (RISE node):`
+  document.getElementById('datasourcelabel2').textContent = `${getText('source')} 2 (RISE node):`
+  document.getElementById('datasourcelabel3').textContent = `${getText('source')} 3 (RISE node):`
+  document.getElementById('pricesourcelabel1').textContent = `${getText('source')} 1 (${getText('prices')}):`
+  document.getElementById('pricesourcelabel2').textContent = `${getText('source')} 2 (${getText('prices')}):`
   document.querySelectorAll('.canceloptions').forEach((elem) => { elem.textContent = getText('button_cancel') })
   document.querySelectorAll('.blockexplorer').forEach((elem) => { elem.textContent = getText('check_blockexplorer') })
   document.querySelectorAll('.userinput').forEach((elem) => { elem.setAttribute('placeholder', getText('opt_address_placeholder')) })
@@ -120,6 +122,8 @@ function restoreAllOptions () {
     'useSource',
     'source2',
     'source3',
+    'useSourcePrice',
+    'sourcePrice2',
     'checkOfflineMessages',
     'alertPriceChangeOnStartup',
     'allowmixedmessage'
@@ -183,6 +187,13 @@ function restoreAllOptions () {
     } else {
       document.getElementById('datasource1').checked = true
     }
+    document.getElementById('sourceprice1').value = 'default' // or sourcePrice
+    document.getElementById('sourceprice2').value = item.sourcePrice2
+    if (item.useSourcePrice.toString() === '2') {
+      document.getElementById('pricesource2').checked = true
+    } else {
+      document.getElementById('pricesource1').checked = true
+    }
   })
 }
 
@@ -231,6 +242,8 @@ function saveAll () {
     changeObj.useSource = document.querySelector('input[name="datasource"]:checked').value
     changeObj.source2 = String(document.getElementById('source2').value).trim()
     changeObj.source3 = String(document.getElementById('source3').value).trim()
+    changeObj.useSourcePrice = document.querySelector('input[name="pricesource"]:checked').value
+    changeObj.sourcePrice2 = String(document.getElementById('sourceprice2').value).trim()
 
     chrome.storage.local.set(changeObj, function () {
       chrome.runtime.reload()
@@ -297,6 +310,8 @@ function removeData () {
   clearObject.source2 = ''
   clearObject.source3 = ''
   clearObject.useSource = '1'
+  clearObject.useSourcePrice = '1'
+  clearObject.sourcePrice2 = ''
   clearObject.allowmixedmessage = 'y'
 
   chrome.storage.local.set(clearObject, function () {
