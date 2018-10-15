@@ -208,7 +208,7 @@ function start () {
             document.getElementById(name).appendChild(hr)
           }
         }
-        document.getElementById('loadericon').setAttribute('class', 'disabled loader')
+        document.getElementById('loadericon').setAttribute('class', 'disabled')
       }
     }
   })
