@@ -58,7 +58,9 @@ function initLoadScript (scriptName = 'globals') {
 
         rise.nodeAddress = source
 
-        sourcePrice = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePriceUrl
+        if (item.useSourcePrice) {
+          sourcePrice = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePriceUrl
+        }
 
         let t = item.transactions
         // default behavior: allow mixed message (or when watchmessages is set to 2 or 3)

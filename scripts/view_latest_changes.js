@@ -103,10 +103,10 @@ function start () {
   document.getElementById('showdetails').textContent = getText('button_showdetails')
   document.getElementById('lastmessages').textContent = getText('m_lastmessages')
 
-  chrome.storage.local.get(['transactions', 'messages', 'address1', 'address2', 'address3', 'address4', 'address5'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages'], (item) => {
+    const incomingRegex = new RegExp(getText('received'), 'i')
     if (item.transactions) {
       // the entries in the array go from old to new, so array needs to be reversed first; senderId determines whether the transaction is considered incoming or outgoing
-      const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
       const data = item.transactions.concat([]).reverse()
       const titlemessages = item.messages.concat([]).reverse()
       if (Array.isArray(data)) {
@@ -119,6 +119,11 @@ function start () {
           document.getElementById(name).appendChild(title)
           const pp = title.parentNode.parentNode
           pp.removeAttribute('hidden')
+          if (titlemessages[i].match(incomingRegex) !== null) {
+            document.getElementById(name).setAttribute('class', 'ui green segment incoming')
+          } else {
+            document.getElementById(name).setAttribute('class', 'ui orange segment outgoing')
+          }
           for (let j = 0; j < data[i].length; j++) {
             let temp = data[i][j]
             const base = ' base'
@@ -128,19 +133,9 @@ function start () {
               let node = document.createElement('DIV')
               let txt
               if (item === 'senderId') {
-                if (item !== '') {
-                  if (addresses.indexOf(temp[item]) !== -1) {
-                    document.getElementById(name).setAttribute('class', 'ui orange segment outgoing')
-                  }
-                }
                 txt = getElement(labels[item], temp[item])
                 info = base
               } else if (item === 'recipientId') {
-                if (item !== '') {
-                  if (addresses.indexOf(temp[item]) !== -1) {
-                    document.getElementById(name).setAttribute('class', 'ui green segment incoming')
-                  }
-                }
                 txt = getElement(labels[item], temp[item])
                 info = base
               } else if (item === 'height') {
