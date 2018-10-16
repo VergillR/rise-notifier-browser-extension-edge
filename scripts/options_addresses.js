@@ -25,6 +25,8 @@ function restoreOptions () {
     'address1',
     'address2',
     'address3',
+    'address4',
+    'address5',
     'address1name',
     'address2name',
     'address3name',
@@ -71,6 +73,8 @@ function restoreOptions () {
         }
       }
     })
+    currentaddresses[3] = item.address4
+    currentaddresses[4] = item.address5
   })
 }
 
@@ -119,6 +123,12 @@ function isDuplicate (address, addressnr, allAddresses) {
       }
       p++
     }
+  }
+  if (address === currentaddresses[3]) {
+    return true
+  }
+  if (address === currentaddresses[4]) {
+    return true
   }
   return false
 }
