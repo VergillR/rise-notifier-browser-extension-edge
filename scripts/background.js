@@ -235,17 +235,19 @@ function getOfflineMessages (type = '1', callbackOnComplete = () => {}, secondAt
               amount = amount + posAmount - negAmount
             }
             if (results.length > 0) {
+              const w = item.watchmessages.toString() || '1'
+              const a = item.allowmixedmessage || 'y'
               lastMatchIds = lastMatchIds.concat(results.map(c => c.id))
-              if (item.watchmessages.toString() !== '1' || item.allowmixedmessage === 'y') {
+              if (w === '1' && a === 'y') {
                 createNotification(amount > 0, results, Math.abs(amount), item)
               } else {
-                if (onlyPosResults.length > 0) {
-                  if (onlyNegResults.length > 0) {
+                if (onlyPosResults.length > 0 && w !== '3') {
+                  if (onlyNegResults.length > 0 && w !== '2') {
                     createNotification(true, onlyPosResults, onlyPosAmount, item, false, onlyNegResults, onlyNegAmount)
                   } else {
                     createNotification(true, onlyPosResults, onlyPosAmount, item)
                   }
-                } else if (onlyNegResults.length > 0) {
+                } else if (onlyNegResults.length > 0 && w !== '2') {
                   createNotification(false, onlyNegResults, onlyNegAmount, item)
                 }
               }
