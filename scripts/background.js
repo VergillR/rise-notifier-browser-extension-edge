@@ -60,12 +60,16 @@ function initLoadScript (scriptName = 'globals') {
 
         if (item.useSourcePrice) {
           sourcePrice = item.useSourcePrice.toString() === '2' ? item.sourcePrice2 : sourcePriceUrl
+        } else {
+          sourcePrice = sourcePriceUrl
         }
 
         let t = item.transactions
+        const a = item.allowmixedmessage || 'y'
+        const w = item.watchmessages || '1'
         // default behavior: allow mixed message (or when watchmessages is set to 2 or 3)
         // fill the lastMatchIds with the last 2 transactionIds from the last 2 notifications stored (if any); this prevents double notifications when the user quickly restarts the extension multiple times
-        if (item.allowmixedmessage === 'y' || item.watchmessages.toString() !== '1') {
+        if (a === 'y' || w.toString() !== '1') {
           if (t && Array.isArray(t) && t.reverse().length > 0) {
             lastMatchIds = (t[1] ? [ ...t[0], ...t[1] ] : t[0]).map((element, index) => element.id)
           }
