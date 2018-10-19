@@ -479,7 +479,7 @@ function alarmListener () {
           }
           lastMatchIds = results.map(c => c.id)
 
-          if (watchmessages !== '1' || item.allowmixedmessage === 'y') {
+          if (watchmessages === '1' && item.allowmixedmessage === 'y') {
             // received and sent transactions may be combined into 1 notification (or watchmessages was set to 2 or 3)
             if (results.length > 0) {
               createNotification(amount > 0, results, Math.abs(amount), item)
@@ -488,14 +488,14 @@ function alarmListener () {
             }
           } else {
             // received and sent transactions should be seperated into multiple notifications
-            if (posResults.length > 0) {
-              if (negResults.length > 0) {
+            if (posResults.length > 0 && watchmessages !== '3') {
+              if (negResults.length > 0 && watchmessages !== '2') {
                 createNotification(true, posResults, posAmount, item, false, negResults, negAmount)
               } else {
                 createNotification(true, posResults, posAmount, item)
               }
               checkAccounts(false, true)
-            } else if (negResults.length > 0) {
+            } else if (negResults.length > 0 && watchmessages !== '2') {
               createNotification(false, negResults, negAmount, item)
               checkAccounts(false, true)
             }
