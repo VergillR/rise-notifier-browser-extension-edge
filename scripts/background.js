@@ -452,7 +452,8 @@ function alarmListener () {
           if (addresses.length === 0) return
 
           const resp = response.transactions
-          const watchmessages = item.watchmessages.toString()
+          const watchmessages = item.watchmessages.toString() || '1'
+          const allowmixedmessage = item.allowmixedmessage || 'y'
           let results = []
           let posResults = []
           let negResults = []
@@ -482,7 +483,7 @@ function alarmListener () {
           }
           lastMatchIds = results.map(c => c.id)
 
-          if (watchmessages === '1' && item.allowmixedmessage === 'y') {
+          if (watchmessages === '1' && allowmixedmessage === 'y') {
             // received and sent transactions may be combined into 1 notification (or watchmessages was set to 2 or 3)
             if (results.length > 0) {
               createNotification(amount > 0, results, Math.abs(amount), item)
