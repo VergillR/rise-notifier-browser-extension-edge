@@ -448,15 +448,16 @@ function alarmListener () {
       // there was at least 1 transaction so check if it matches any given RISE addresses
       if (response.transactions && response.transactions.length > 0) {
         chrome.storage.local.get(['address1', 'address2', 'address3', 'address4', 'address5', 'watchmessages', 'transactions', 'messages', 'allowmixedmessage'], (item) => {
+          const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ].filter(c => c)
+          if (addresses.length === 0) return
+
           const resp = response.transactions
           const watchmessages = item.watchmessages.toString()
-
           let results = []
           let posResults = []
           let negResults = []
           let posAmount = 0
           let negAmount = 0
-          const addresses = [ item.address1, item.address2, item.address3, item.address4, item.address5 ]
           let amount = 0
           if (watchmessages === '1') {
             // sending to oneself, voting, registering a delegate or second signature should only count as 1 transaction (instead of 2)
@@ -471,10 +472,12 @@ function alarmListener () {
             results = posResults.concat(negResults)
             amount = posAmount - negAmount
           } else if (watchmessages === '2') {
-            results = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
+            posResults = resp.filter(c => addresses.indexOf(c.receiverId) !== -1 && addresses.indexOf(c.senderId) === -1 && lastMatchIds.indexOf(c.id) === -1)
+            results = posResults
             amount = results.reduce((acc, value) => { acc += value.amount; return acc }, 0)
           } else if (watchmessages === '3') {
-            results = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
+            negResults = resp.filter(c => addresses.indexOf(c.senderId) !== -1 && lastMatchIds.indexOf(c.id) === -1)
+            results = negResults
             amount = results.reduce((acc, value) => { acc -= value.amount; return acc }, 0)
           }
           lastMatchIds = results.map(c => c.id)
