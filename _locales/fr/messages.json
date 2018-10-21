@@ -13,7 +13,7 @@
     "message": "D MMMM YYYY, HH:mm:ss"
   },
   "button_save": {
-    "message": "Enregistrer et recommencer"
+    "message": "Enregistrer et redémarrer"
   },
   "button_cancel": {
     "message": "Annuler"
