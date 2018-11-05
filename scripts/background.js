@@ -118,7 +118,7 @@ function initLoadScript (scriptName = 'globals') {
 initLoadScript('rise')
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'address1delegateProd', 'address2delegateProd', 'address3delegateProd', 'address4delegate', 'address5delegateProd', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source2', 'source3', 'useSource', 'useSourcePrice', 'sourcePrice2', 'checkOfflineMessages', 'alertPriceChangeOnStartup', 'allowmixedmessage'], (item) => {
+  chrome.storage.local.get(['transactions', 'messages', 'watchmessages', 'address1', 'address2', 'address3', 'address4', 'address5', 'address1amount', 'address2amount', 'address3amount', 'address4amount', 'address5amount', 'address1delegate', 'address2delegate', 'address3delegate', 'address4delegate', 'address5delegate', 'address1delegateProd', 'address2delegateProd', 'address3delegateProd', 'address4delegate', 'address5delegateProd', 'lastseenblockheight', 'riseUsd', 'riseBtc', 'source2', 'source3', 'useSource', 'useSourcePrice', 'sourcePrice2', 'checkOfflineMessages', 'alertPriceChangeOnStartup', 'allowmixedmessage', 'showerrormessages'], (item) => {
     const initObject = {}
     if (!item.transactions) initObject.transactions = []
     if (!item.messages) initObject.messages = []
@@ -167,6 +167,7 @@ chrome.runtime.onInstalled.addListener(() => {
     if (!item.useSourcePrice) initObject.useSourcePrice = '1'
     if (!item.sourcePrice2) initObject.sourcePrice2 = ''
     if (!item.allowmixedmessage) initObject.allowmixedmessage = 'y'
+    if (!item.showerrormessages) initObject.showerrormessages = 'n'
 
     chrome.storage.local.set(initObject, () => {
       setTimeout(() => {
@@ -417,21 +418,24 @@ function compare (a, b) {
 
 /**
  * Display a notification in case an error occurred, e.g. when the server did not respond or the url does not exist
+ * Error notifications are only displayed if item.showerrormessages is set to 'y'
  * @param {string} message Message text
  */
 function notifyConnectionProblems (message) {
-  chrome.browserAction.getBadgeText({}, (result) => {
-    if (result !== 'X') {
-      chrome.browserAction.setBadgeBackgroundColor({color: '#DF1100'})
-      chrome.browserAction.setBadgeText({ text: 'X' })
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: './images/rise_notification_problem.png',
-        title: getText('connection_error'),
-        message: `${message}`,
-        priority: 0
-      })
-    }
+  chrome.storage.local.get([ 'showerrormessages' ], (item) => {
+    chrome.browserAction.getBadgeText({}, (result) => {
+      if (result !== 'X') {
+        chrome.browserAction.setBadgeBackgroundColor({color: '#DF1100'})
+        chrome.browserAction.setBadgeText({ text: 'X' })
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: './images/rise_notification_problem.png',
+          title: getText('connection_error'),
+          message: `${message}`,
+          priority: 0
+        })
+      }
+    })
   })
 }
 

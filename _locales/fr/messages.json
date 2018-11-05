@@ -200,5 +200,8 @@
   },
   "separate_notifications": {
     "message": "Afficher les notifications pour les transactions entrantes et sortantes séparément"
+  },
+  "error_notifications": {
+    "message": "Afficher les notifications pour des erreurs"
   }
 }

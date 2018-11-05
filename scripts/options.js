@@ -71,6 +71,7 @@ function restoreAllOptions () {
   document.getElementById('labelcheckstartup').textContent = getText('checkstartup')
   document.getElementById('labelcheckpricediff').textContent = getText('show_pricechange')
   document.getElementById('labelseparatemessage').textContent = getText('separate_notifications')
+  document.getElementById('labelshowerrormessages').textContent = getText('error_notifications')
   document.getElementById('datasourcelabel1').textContent = `${getText('source')} 1 (RISE node):`
   document.getElementById('datasourcelabel2').textContent = `${getText('source')} 2 (RISE node):`
   document.getElementById('datasourcelabel3').textContent = `${getText('source')} 3 (RISE node):`
@@ -126,7 +127,8 @@ function restoreAllOptions () {
     'sourcePrice2',
     'checkOfflineMessages',
     'alertPriceChangeOnStartup',
-    'allowmixedmessage'
+    'allowmixedmessage',
+    'showerrormessages'
   ], function (item) {
     currentaddresses[0] = item.address1
     currentaddresses[1] = item.address2
@@ -176,6 +178,9 @@ function restoreAllOptions () {
     }
     if (item.allowmixedmessage !== 'y') {
       document.getElementById('separatemessage').checked = true
+    }
+    if (item.showerrormessages === 'y') {
+      document.getElementById('showerrormessages').checked = true
     }
     document.getElementById('source1').value = 'default' // or sourceUrl
     document.getElementById('source2').value = item.source2
@@ -239,6 +244,7 @@ function saveAll () {
     changeObj.checkOfflineMessages = document.querySelector('input[name="checkstartup"]').checked ? '1' : '2'
     changeObj.alertPriceChangeOnStartup = document.querySelector('input[name="checkpricediff"]').checked ? '1' : '2'
     changeObj.allowmixedmessage = document.querySelector('input[name="separatemessage"]').checked ? 'n' : 'y'
+    changeObj.showerrormessages = document.querySelector('input[name="showerrormessages"]').checked ? 'y' : 'n'
     changeObj.useSource = document.querySelector('input[name="datasource"]:checked').value
     changeObj.source2 = String(document.getElementById('source2').value).trim()
     changeObj.source3 = String(document.getElementById('source3').value).trim()
@@ -313,6 +319,7 @@ function removeData () {
   clearObject.useSourcePrice = '1'
   clearObject.sourcePrice2 = ''
   clearObject.allowmixedmessage = 'y'
+  clearObject.showerrormessages = 'n'
 
   chrome.storage.local.set(clearObject, function () {
     chrome.runtime.reload()

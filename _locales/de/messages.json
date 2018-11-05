@@ -200,5 +200,8 @@
   },
   "separate_notifications": {
     "message": "Benachrichtigungen für eingehende und ausgehende Transaktionen getrennt zeigen"
+  },
+  "error_notifications": {
+    "message": "Benachrichtigungen für Fehler zeigen"
   }
 }
