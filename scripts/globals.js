@@ -52,8 +52,34 @@ const capitalizeInputValue = (input) => String(document.getElementById(input).va
  */
 const getElement = (description, value) => {
   const el = document.createElement('DIV')
-  el.innerHTML = `<span class='description'>${description}:</span> <span class='val'>${value}</span>`
+  const descriptionEl = document.createElement('SPAN')
+  descriptionEl.setAttribute('class', 'description')
+  descriptionEl.textContent = description + ': '
+  const valueEl = document.createElement('SPAN')
+  valueEl.setAttribute('class', 'val')
+  valueEl.textContent = value
+  el.appendChild(descriptionEl)
+  el.appendChild(valueEl)
   return el
+}
+/**
+ * Creates and returns a HTML Icon element with 1 child text node
+ * @param {string} iconClassName Class of icon element; starts with "icon" as defined by Semantic UI
+ * @returns {HTMLElement} New HTML element
+ */
+const getLabeledIconElement = (iconClassName) => {
+  const iconEl = document.createElement('i')
+  iconEl.setAttribute('class', iconClassName)
+  return iconEl
+}
+/**
+ * Creates and returns a Text Node that can be inserted in the DOM
+ * @param {string} text Text that should be included in the node
+ * @returns {HTMLElement} New HTML element
+ */
+const getTextNode = (text) => {
+  const txtnode = document.createTextNode(text)
+  return txtnode
 }
 /**
  * Simple animation where the content slides from right to left

@@ -1,4 +1,4 @@
-/* global chrome, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
+/* global chrome, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex, getLabeledIconElement, getTextNode */
 let currentaddresses = []
 
 /**
@@ -86,7 +86,12 @@ function restoreAllOptions () {
   document.getElementById('i_incoming').textContent = getText('watch_incoming')
   document.getElementById('i_outgoing').textContent = getText('watch_outgoing')
   document.getElementById('data').textContent = capitalize(getText('data'))
-  document.getElementById('eraser').innerHTML = `<i class="icon big blue trash"></i>${getText('remove_data')}`
+
+  const icon11 = getLabeledIconElement('icon big blue trash')
+  const txtnode11 = getTextNode(getText('remove_data'))
+  const target11 = document.getElementById('eraser')
+  target11.appendChild(icon11)
+  target11.appendChild(txtnode11)
 
   chrome.storage.local.get([
     'address1',
@@ -140,25 +145,41 @@ function restoreAllOptions () {
       if (val) {
         if (item[`address${index + 1}amount`].toString() !== '-1') {
           if (item[`address${index + 1}name`]) {
-            document.getElementById(`address${index + 1}name`).innerHTML = '<i class="icon teal user"></i>' + item[`address${index + 1}name`]
-            document.getElementById(`address${index + 1}name`).setAttribute('class', `ui horizontal label`)
+            const icon1 = getLabeledIconElement('icon teal user')
+            const txtnode1 = getTextNode(item[`address${index + 1}name`])
+            const target1 = document.getElementById(`address${index + 1}name`)
+            target1.setAttribute('class', `ui horizontal label`)
+            target1.appendChild(icon1)
+            target1.appendChild(txtnode1)
           }
           document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
           document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
           document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
           document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
           if (item[`address${index + 1}twosig`]) {
-            document.getElementById(`address${index + 1}twosig`).innerHTML = '<i class="icon yellow key"></i>2 ' + getText('m_signatures').toLowerCase()
-            document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
+            const icon2 = getLabeledIconElement('icon yellow key')
+            const txtnode2 = getTextNode('2 ' + getText('m_signatures').toLowerCase())
+            const target2 = document.getElementById(`address${index + 1}twosig`)
+            target2.setAttribute('class', `ui horizontal label`)
+            target2.appendChild(icon2)
+            target2.appendChild(txtnode2)
           }
           if (item[`address${index + 1}delegate`]) {
             const prod = item[`address${index + 1}delegateProd`] ? ` (${item[`address${index + 1}delegateProd`]} %)` : ''
-            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`] + prod
-            document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
+            const icon3 = getLabeledIconElement('icon blue pencil alternate')
+            const txtnode3 = getTextNode(item[`address${index + 1}delegate`] + prod)
+            const target3 = document.getElementById(`address${index + 1}delegate`)
+            target3.setAttribute('class', `ui horizontal label`)
+            target3.appendChild(icon3)
+            target3.appendChild(txtnode3)
           }
         } else {
-          document.getElementById(`address${index + 1}amount`).innerHTML = `<i class="icon red exclamation triangle"></i>${getText('address_not_found')}`
-          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
+          const icon4 = getLabeledIconElement('icon red exclamation triangle')
+          const txtnode4 = getTextNode(getText('address_not_found'))
+          const target4 = document.getElementById(`address${index + 1}amount`)
+          target4.setAttribute('class', 'ui horizontal label')
+          target4.appendChild(icon4)
+          target4.appendChild(txtnode4)
         }
       }
     })
@@ -209,14 +230,22 @@ function saveAll () {
   const givenSources = [ String(document.getElementById('source2').value).trim(), String(document.getElementById('source3').value).trim() ]
   const forbiddenRegex = /wallet\.rise\.vision/i
   if (givenSources[0].match(forbiddenRegex) !== null || givenSources[1].match(forbiddenRegex) !== null) {
-    document.getElementById(`urlerrormessage`).innerHTML = `<i class="icon exclamation triangle"></i><b>wallet.rise.vision</b> ${getText('is_not_allowed')}`
-    document.getElementById(`urlerrormessage`).removeAttribute('hidden')
+    const icon5 = getLabeledIconElement('icon exclamation triangle')
+    const txtnode5 = getTextNode('wallet.rise.vision ' + getText('is_not_allowed'))
+    const target5 = document.getElementById(`urlerrormessage`)
+    target5.appendChild(icon5)
+    target5.appendChild(txtnode5)
+    target5.removeAttribute('hidden')
     return
   }
   const selectedSource = parseInt(document.querySelector('input[name="datasource"]:checked').value, 10)
   if (selectedSource > 1 && givenSources[selectedSource - 2] === '') {
-    document.getElementById(`urlerrormessage`).innerHTML = `<i class="icon exclamation triangle"></i>${getText('source_has_no_url')}`
-    document.getElementById(`urlerrormessage`).removeAttribute('hidden')
+    const icon6 = getLabeledIconElement('icon exclamation triangle')
+    const txtnode6 = getTextNode(getText('source_has_no_url'))
+    const target6 = document.getElementById(`urlerrormessage`)
+    target6.appendChild(icon6)
+    target6.appendChild(txtnode6)
+    target6.removeAttribute('hidden')
     return
   }
 

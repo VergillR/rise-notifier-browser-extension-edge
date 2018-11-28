@@ -1,4 +1,4 @@
-/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex */
+/* global browser, chrome, enterAnimation, leaveAnimation, version, getText, explorerUrl, capitalize, capitalizeInputValue, longToNormalAmount, riseRegex, getLabeledIconElement, getTextNode */
 let currentaddresses = []
 
 /**
@@ -50,8 +50,12 @@ function restoreOptions () {
       document.getElementById(`address${index + 1}`).value = val || ''
       if (val) {
         if (item[`address${index + 1}name`]) {
-          document.getElementById(`address${index + 1}name`).innerHTML = '<i class="icon teal user"></i>' + item[`address${index + 1}name`]
-          document.getElementById(`address${index + 1}name`).setAttribute('class', `ui horizontal label`)
+          const icon1 = getLabeledIconElement('icon teal user')
+          const txtnode1 = getTextNode(item[`address${index + 1}name`])
+          const target1 = document.getElementById(`address${index + 1}name`)
+          target1.setAttribute('class', `ui horizontal label`)
+          target1.appendChild(icon1)
+          target1.appendChild(txtnode1)
         }
         if (item[`address${index + 1}amount`].toString() !== '-1') {
           document.getElementById(`address${index + 1}amount`).textContent = (longToNormalAmount(parseInt(item[`address${index + 1}amount`], 10)) || 0) + ' RISE'
@@ -59,17 +63,29 @@ function restoreOptions () {
           document.getElementById(`address${index + 1}url`).setAttribute('href', `${explorerUrl}${val}`)
           document.getElementById(`address${index + 1}url`).removeAttribute('hidden')
           if (item[`address${index + 1}twosig`]) {
-            document.getElementById(`address${index + 1}twosig`).innerHTML = '<i class="icon yellow key"></i>2 ' + getText('m_signatures').toLowerCase()
-            document.getElementById(`address${index + 1}twosig`).setAttribute('class', `ui horizontal label`)
+            const icon2 = getLabeledIconElement('icon yellow key')
+            const txtnode2 = getTextNode('2 ' + getText('m_signatures').toLowerCase())
+            const target2 = document.getElementById(`address${index + 1}twosig`)
+            target2.setAttribute('class', `ui horizontal label`)
+            target2.appendChild(icon2)
+            target2.appendChild(txtnode2)
           }
           if (item[`address${index + 1}delegate`]) {
             const prod = item[`address${index + 1}delegateProd`] ? ` (${item[`address${index + 1}delegateProd`]} %)` : ''
-            document.getElementById(`address${index + 1}delegate`).innerHTML = '<i class="icon blue pencil alternate"></i>' + item[`address${index + 1}delegate`] + prod
-            document.getElementById(`address${index + 1}delegate`).setAttribute('class', `ui icon horizontal label`)
+            const icon3 = getLabeledIconElement('icon blue pencil alternate')
+            const txtnode3 = getTextNode(item[`address${index + 1}delegate`] + prod)
+            const target3 = document.getElementById(`address${index + 1}delegate`)
+            target3.setAttribute('class', `ui horizontal label`)
+            target3.appendChild(icon3)
+            target3.appendChild(txtnode3)
           }
         } else {
-          document.getElementById(`address${index + 1}amount`).innerHTML = `<i class="icon red exclamation triangle"></i>${getText('address_not_found')}`
-          document.getElementById(`address${index + 1}amount`).setAttribute('class', `ui horizontal label`)
+          const icon4 = getLabeledIconElement('icon red exclamation triangle')
+          const txtnode4 = getTextNode(getText('address_not_found'))
+          const target4 = document.getElementById(`address${index + 1}amount`)
+          target4.setAttribute('class', 'ui horizontal label')
+          target4.appendChild(icon4)
+          target4.appendChild(txtnode4)
         }
       }
     })
