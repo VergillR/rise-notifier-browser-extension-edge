@@ -34,7 +34,7 @@
     "message": "Block Explorer beobachten"
   },
   "validation_error": {
-    "message": "Die Adresse beginnt mit 15 zu 30 Ziffern und endet mit R"
+    "message": "Die Adresse beginnt mit 1 zu 30 Ziffern und endet mit R"
   },
   "options": {
     "message": "Optionen"

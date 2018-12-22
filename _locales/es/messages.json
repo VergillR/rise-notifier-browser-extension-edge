@@ -34,7 +34,7 @@
     "message": "Comprobar el Bloque Explorador"
   },
   "validation_error": {
-    "message": "La dirección comienza con 15 a 30 números y termina con R"
+    "message": "La dirección comienza con 1 a 30 números y termina con R"
   },
   "options": {
     "message": "Opciones"

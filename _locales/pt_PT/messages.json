@@ -34,7 +34,7 @@
     "message": "Examinar o RISE explorador"
   },
   "validation_error": {
-    "message": "O endereço começa com 15 a 30 números e termina com R"
+    "message": "O endereço começa com 1 a 30 números e termina com R"
   },
   "options": {
     "message": "Opções"

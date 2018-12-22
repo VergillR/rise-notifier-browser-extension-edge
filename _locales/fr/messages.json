@@ -34,7 +34,7 @@
     "message": "Examiner le Bloc Explorer"
   },
   "validation_error": {
-    "message": "L'addresse commence par 15 à 30 chiffres et se termine par R"
+    "message": "L'addresse commence par 1 à 30 chiffres et se termine par R"
   },
   "options": {
     "message": "Options"

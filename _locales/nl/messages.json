@@ -34,7 +34,7 @@
     "message": "Bekijk de Block Explorer"
   },
   "validation_error": {
-    "message": "Het adres begint met 15 tot 30 getallen en eindigt met R"
+    "message": "Het adres begint met 1 tot 30 getallen en eindigt met R"
   },
   "options": {
     "message": "Opties"

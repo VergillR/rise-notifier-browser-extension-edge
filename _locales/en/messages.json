@@ -34,7 +34,7 @@
     "message": "Check on Block Explorer"
   },
   "validation_error": {
-    "message": "Address starts with 15 to 30 digits and ends with R"
+    "message": "Address starts with 1 to 30 digits and ends with R"
   },
   "options": {
     "message": "Options"
