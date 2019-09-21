@@ -13,7 +13,7 @@ const explorerUrl = 'https://explorer.rise.vision/address/';
 const sourcePriceUrl = 'https://api.coinmarketcap.com/v1/ticker/RISE/';
 
 // regex used to validate RISE addresses
-const riseRegex = /.+/i;
+const riseRegex = /.{2,}/i;
 
 /**
  * Get text based on the browser's language with i18n
